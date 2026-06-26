@@ -1,44 +1,19 @@
-# journal_model.py
-
-import torch
-import torch.nn.functional as F
-
-from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassification
+from transformers import pipeline
 
 LABEL2ID = {"NEU": 0, "HUMOR": 1, "MH": 2, "SI": 3}
 ID2LABEL = {v: k for k, v in LABEL2ID.items()}
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-def load_model(model_path, tokenizer_name="distilbert-base-uncased"):
-    tokenizer = DistilBertTokenizerFast.from_pretrained(tokenizer_name)
-    model = DistilBertForSequenceClassification.from_pretrained(
-        model_path,
-        num_labels=len(LABEL2ID),
-        id2label=ID2LABEL,
-        label2id=LABEL2ID,
+def load_model(model_path, tokenizer_name=None):
+    clf = pipeline(
+        "text-classification",
+        model=model_path,
+        top_k=None,
+        device=-1
     )
-    model.to(device)
-    model.eval()
-    return tokenizer, model
+    return None, clf
 
 def predict_entry(text, tokenizer, model, max_length=256):
-    encodings = tokenizer(
-        [text],
-        padding=True,
-        truncation=True,
-        max_length=max_length,
-        return_tensors="pt"
-    )
-    encodings = {k: v.to(device) for k, v in encodings.items()}
-
-    with torch.no_grad():
-        outputs = model(**encodings)
-        logits = outputs.logits
-        probs = F.softmax(logits, dim=-1).cpu().numpy()[0]
-
-    pred_id = int(probs.argmax())
-    pred_label = ID2LABEL[pred_id]
-    prob_dict = {ID2LABEL[i]: float(probs[i]) for i in range(len(probs))}
-
+    results = model(text, truncation=True, max_length=max_length)[0]
+    prob_dict = {r["label"]: round(r["score"], 4) for r in results}
+    pred_label = max(prob_dict, key=prob_dict.get)
     return pred_label, prob_dict
