@@ -131,9 +131,8 @@ html, body, [class*="css"] {
 
 .stApp {
     background:
-        # radial-gradient(circle at top left, rgba(99, 102, 241, 0.08), transparent 30%),
-        # linear-gradient(180deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
-        green
+        radial-gradient(circle at top left, rgba(99, 102, 241, 0.08), transparent 30%),
+        linear-gradient(180deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
 }
 
 .block-container {
@@ -206,14 +205,17 @@ html, body, [class*="css"] {
     background: var(--success-bg);
     color: var(--success-text);
 }
+
 .badge.yellow {
     background: var(--warn-bg);
     color: var(--warn-text);
 }
+
 .badge.red {
     background: var(--danger-bg);
     color: var(--danger-text);
 }
+
 .badge.blue {
     background: var(--info-bg);
     color: var(--info-text);
@@ -227,7 +229,7 @@ html, body, [class*="css"] {
 }
 
 .metric-pill {
-    # background: #f8fafc;
+    /* background: #f8fafc; */
     background: pink;
     color: #334155;
     border: 1px solid #e2e8f0;
@@ -240,7 +242,7 @@ html, body, [class*="css"] {
 div[data-testid="stTextArea"] textarea {
     border-radius: 18px !important;
     border: 1px solid #cbd5e1 !important;
-    background: #red !important;
+    background: red !important;
     padding: 1rem !important;
     font-size: 1rem !important;
     line-height: 1.6 !important;
