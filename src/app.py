@@ -239,7 +239,7 @@ html, body, [class*="css"] {
 div[data-testid="stTextArea"] textarea {
     border-radius: 18px !important;
     border: 1px solid #cbd5e1 !important;
-    background: #fcfdff !important;
+    background: #red !important;
     padding: 1rem !important;
     font-size: 1rem !important;
     line-height: 1.6 !important;
