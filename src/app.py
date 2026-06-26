@@ -110,7 +110,7 @@ st.markdown("""
     --bg-grad-2: #edf4f7;
     --card-bg: rgba(255, 255, 255, 0.86);
     --card-border: rgba(15, 23, 42, 0.08);
-    --text-main: black;
+    --text-main: pink;
     --text-soft: #475569;
     --text-muted: #64748b;
     --primary: #4f46e5;
