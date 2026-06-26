@@ -227,7 +227,7 @@ html, body, [class*="css"] {
 
 .metric-pill {
     # background: #f8fafc;
-    background: orange;
+    background: pink;
     color: #334155;
     border: 1px solid #e2e8f0;
     border-radius: 14px;
