@@ -92,13 +92,9 @@ if st.session_state.analysis_done:
 
     if decision.get("showcrisiscard") or decision.get("show_crisis_card"):
         st.error(
-            "⚠️ This entry may reflect significant distress.
-
-"
-            "If you may be in immediate danger or may act on self-harm thoughts, "
-            "contact local emergency services now or reach out to a trusted person immediately.
-
-"
+            "⚠️ This entry may reflect significant distress.\n\n"
+            "If you may be in immediate danger or may act on self-harm thoughts,"
+            "contact local emergency services now or reach out to a trusted person immediately.\n\n"
             "India crisis support: iCall — 9152987821"
         )
     elif recommendation == "seek_professional_help":
