@@ -129,9 +129,9 @@ html, body, [class*="css"] {
 
 .stApp {
     background:
-        radial-gradient(circle at top left, rgba(99, 102, 241, 0.07), transparent 40%),
-        radial-gradient(circle at bottom right, rgba(99, 162, 241, 0.06), transparent 40%),
-        linear-gradient(180deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
+        radial-gradient(circle at top left, rgba(99, 102, 241, 0.06), transparent 40%),
+        radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.05), transparent 40%),
+        linear-gradient(180deg, #e8eef8 0%, #dde7f2 100%);
 }
 
 .block-container {
