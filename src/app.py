@@ -261,7 +261,7 @@ div[data-testid="stTextArea"] textarea {
 div[data-testid="stTextArea"] textarea:focus {
     # border-color: #4f46e5 !important;
     background: #cbd5e1 !important;
-    # color: #020617 !important;
+    color: #020617 !important;
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18) !important;
     outline: none !important;
 }
