@@ -248,10 +248,10 @@ html, body, [class*="css"] {
 }
 
 div[data-testid="stTextArea"] textarea {
-    border-radius: 16px !important;
-    border: 1.5px solid #94a3b8 !important;
+    # border-radius: 16px !important;
+    # border: 1.5px solid #94a3b8 !important;
     background: #e2e8f0 !important;
-    color: #0f172a !important;
+    # color: #0f172a !important;
     padding: 1rem !important;
     font-size: 1rem !important;
     line-height: 1.65 !important;
@@ -259,9 +259,9 @@ div[data-testid="stTextArea"] textarea {
 }
 
 div[data-testid="stTextArea"] textarea:focus {
-    border-color: #4f46e5 !important;
+    # border-color: #4f46e5 !important;
     background: #cbd5e1 !important;
-    color: #020617 !important;
+    # color: #020617 !important;
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18) !important;
     outline: none !important;
 }
