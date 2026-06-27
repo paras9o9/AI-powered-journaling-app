@@ -248,8 +248,8 @@ html, body, [class*="css"] {
 }
 
 div[data-testid="stTextArea"] textarea {
-    border-radius: 16px !important;
-    border: 1.5px solid #c7d2e8 !important;
+    # border-radius: 16px !important;
+    # border: 1.5px solid #c7d2e8 !important;
     background: #fafbff !important;
     padding: 1rem !important;
     font-size: 1rem !important;
@@ -258,7 +258,7 @@ div[data-testid="stTextArea"] textarea {
 }
 
 div[data-testid="stTextArea"] textarea:focus {
-    border-color: #6366f1 !important;
+    # border-color: #6366f1 !important;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.14) !important;
     background: #ffffff !important;
 }
