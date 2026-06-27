@@ -248,28 +248,28 @@ html, body, [class*="css"] {
 }
 
 div[data-testid="stTextArea"] textarea {
-    # border-radius: 16px !important;
-    # border: 1.5px solid #94a3b8 !important;
-    background: #e2e8f0 !important;
+    border-radius: 16px !important;
+    border: 1.5px solid #64748b !important;
+    background: #cbd5e1 !important;
     color: #0f172a !important;
     padding: 1rem !important;
     font-size: 1rem !important;
     line-height: 1.65 !important;
-    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06) !important;
+    font-weight: 500 !important;
 }
 
 div[data-testid="stTextArea"] textarea:focus {
-    # border-color: #4f46e5 !important;
-    background: #cbd5e1 !important;
+    border-color: #4338ca !important;
+    background: #bac7d8 !important;
     color: #020617 !important;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18) !important;
-    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.16) !important;
 }
 
 div[data-testid="stTextArea"] textarea::placeholder {
-    # color: #475569 !important;
+    color: #334155 !important;
     opacity: 1 !important;
 }
+
 div[data-testid="stButton"] > button {
     border-radius: 14px !important;
     min-height: 46px !important;
