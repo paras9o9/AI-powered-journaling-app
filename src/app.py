@@ -267,7 +267,7 @@ div[data-testid="stTextArea"] textarea:focus {
 }
 
 div[data-testid="stTextArea"] textarea::placeholder {
-    color: #475569 !important;
+    # color: #475569 !important;
     opacity: 1 !important;
 }
 div[data-testid="stButton"] > button {
