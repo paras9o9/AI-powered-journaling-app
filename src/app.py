@@ -252,7 +252,7 @@ div[data-testid="stTextArea"] textarea {
     border: 1.5px solid #64748b !important;
     background: #cbd5e1 !important;
     color: #0f172a !important;
-    caret_color: black;
+    caret-color: #0f172a !important;
     padding: 1rem !important;
     font-size: 1rem !important;
     line-height: 1.65 !important;
@@ -263,6 +263,7 @@ div[data-testid="stTextArea"] textarea:focus {
     border-color: #4338ca !important;
     background: #bac7d8 !important;
     color: #020617 !important;
+    caret-color: #020617 !important;
     box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.16) !important;
 }
 
