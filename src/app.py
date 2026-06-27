@@ -101,14 +101,12 @@ def render_status_message(msg_type, text):
 
 # -----------------------------
 # Styling
-# -----------------------------
 st.markdown("""
 <style>
 :root {
-    --bg-main: #f4f7fb;
-    --bg-grad-1: #f8fbff;
-    --bg-grad-2: #edf4f7;
-    --card-bg: rgba(255, 255, 255, 0.86);
+    --bg-grad-1: #f0f4ff;
+    --bg-grad-2: #e8f0fe;
+    --card-bg: rgba(255, 255, 255, 0.92);
     --card-border: rgba(15, 23, 42, 0.08);
     --text-main: #0f172a;
     --text-soft: #475569;
@@ -131,7 +129,8 @@ html, body, [class*="css"] {
 
 .stApp {
     background:
-        radial-gradient(circle at top left, rgba(99, 102, 241, 0.08), transparent 30%),
+        radial-gradient(circle at top left, rgba(99, 102, 241, 0.07), transparent 40%),
+        radial-gradient(circle at bottom right, rgba(99, 162, 241, 0.06), transparent 40%),
         linear-gradient(180deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
 }
 
@@ -168,142 +167,174 @@ html, body, [class*="css"] {
 }
 
 .section-heading {
-    font-size: 0.84rem;
+    font-size: 0.82rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-muted);
+    letter-spacing: 0.09em;
+    color: var(--primary);
     font-weight: 800;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.3rem;
 }
 
 .block-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 22px;
-    padding: 1.25rem 1.25rem 1rem 1.25rem;
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-    margin-bottom: 1rem;
-    backdrop-filter: blur(10px);
+    padding: 1.4rem 1.4rem 1.1rem 1.4rem;
+    box-shadow: 0 4px 6px rgba(15, 23, 42, 0.04),
+                0 10px 30px rgba(15, 23, 42, 0.07);
+    margin-bottom: 1.1rem;
+    backdrop-filter: blur(12px);
 }
 
 .mini-note {
     color: var(--text-muted);
-    font-size: 0.92rem;
-    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    margin-top: 0.55rem;
+    padding: 0.5rem 0.75rem;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e8edf3;
 }
 
 .badge {
     display: inline-block;
-    padding: 0.45rem 0.8rem;
+    padding: 0.45rem 1rem;
     border-radius: 999px;
     font-size: 0.9rem;
     font-weight: 800;
     margin: 0.4rem 0 0.8rem 0;
+    letter-spacing: 0.01em;
 }
 
 .badge.green {
     background: var(--success-bg);
     color: var(--success-text);
+    border: 1px solid #86efac;
 }
 
 .badge.yellow {
     background: var(--warn-bg);
     color: var(--warn-text);
+    border: 1px solid #fcd34d;
 }
 
 .badge.red {
     background: var(--danger-bg);
     color: var(--danger-text);
+    border: 1px solid #fca5a5;
 }
 
 .badge.blue {
     background: var(--info-bg);
     color: var(--info-text);
+    border: 1px solid #93c5fd;
 }
 
 .metric-strip {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
-    margin: 0.2rem 0 0.85rem 0;
+    gap: 0.65rem;
+    margin: 0.3rem 0 0.9rem 0;
 }
 
 .metric-pill {
-    background: #fff1f2;
-    color: #9f1239;
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 0.55rem 0.85rem;
-    font-size: 0.92rem;
+    background: #f1f5f9;
+    color: #1e293b;
+    border: 1px solid #dde3ec;
+    border-radius: 12px;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.91rem;
     font-weight: 600;
 }
 
 div[data-testid="stTextArea"] textarea {
-    border-radius: 18px !important;
-    border: 1px solid #cbd5e1 !important;
-    background: #fffafa !important;
+    border-radius: 16px !important;
+    border: 1.5px solid #c7d2e8 !important;
+    background: #fafbff !important;
     padding: 1rem !important;
     font-size: 1rem !important;
-    line-height: 1.6 !important;
+    line-height: 1.65 !important;
+    color: #0f172a !important;
 }
 
 div[data-testid="stTextArea"] textarea:focus {
     border-color: #6366f1 !important;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12) !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.14) !important;
+    background: #ffffff !important;
+}
+
+div[data-testid="stTextArea"] textarea::placeholder {
+    color: #94a3b8 !important;
 }
 
 div[data-testid="stButton"] > button {
     border-radius: 14px !important;
     min-height: 46px !important;
     font-weight: 800 !important;
+    font-size: 0.97rem !important;
+    letter-spacing: 0.01em !important;
     border: none !important;
+    transition: all 0.18s ease !important;
 }
 
 div[data-testid="stBaseButton-primary"] > button {
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
-    color: white !important;
+    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35) !important;
 }
 
 div[data-testid="stBaseButton-primary"] > button:hover {
-    filter: brightness(1.02);
-    transform: translateY(-1px);
+    filter: brightness(1.07) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4) !important;
 }
 
 div[data-testid="stBaseButton-secondary"] > button {
-    background: white !important;
+    background: #ffffff !important;
     color: #334155 !important;
-    border: 1px solid #dbe2ea !important;
+    border: 1.5px solid #dde3ec !important;
+}
+
+div[data-testid="stBaseButton-secondary"] > button:hover {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
 }
 
 div[data-testid="stExpander"] details {
-    background: rgba(255,255,255,0.9) !important;
-    border: 1px solid #e2e8f0 !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid #dde3ec !important;
     border-radius: 18px !important;
-    padding: 0.2rem 0.35rem !important;
+    padding: 0.2rem 0.4rem !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05) !important;
 }
 
 div[data-testid="stExpander"] summary {
     font-weight: 700 !important;
-    color: #0f172a !important;
+    color: #1e293b !important;
+    font-size: 0.97rem !important;
 }
 
 div[data-testid="stSelectbox"] > div {
-    border-radius: 14px !important;
+    border-radius: 12px !important;
 }
 
 div[data-testid="stAlert"] {
     border-radius: 16px !important;
 }
 
+div[data-testid="stProgressBar"] > div {
+    border-radius: 999px !important;
+}
+
 hr {
     border: none;
     height: 1px;
-    background: linear-gradient(90deg, transparent, #dbe4ee, transparent);
-    margin: 1rem 0 0.4rem 0;
+    background: linear-gradient(90deg, transparent, #c7d2e8, transparent);
+    margin: 1.1rem 0 0.5rem 0;
 }
 
 .result-label {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: var(--text-main);
     margin-bottom: 0.2rem;
@@ -312,25 +343,30 @@ hr {
 .helper-copy {
     color: var(--text-soft);
     font-size: 0.96rem;
-    line-height: 1.6;
+    line-height: 1.65;
+    margin-bottom: 0.5rem;
 }
 
 .question-title {
     font-size: 1.05rem;
     font-weight: 700;
     color: var(--text-main);
-    margin-top: 0.3rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.2rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 2px solid #e8edf3;
 }
 
 .footer-note {
     text-align: center;
     color: var(--text-muted);
     font-size: 0.85rem;
-    margin-top: 1.2rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e8edf3;
 }
 </style>
 """, unsafe_allow_html=True)
-
 # -----------------------------
 # Hero
 # -----------------------------
