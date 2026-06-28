@@ -20,9 +20,6 @@ def get_model():
 
 tokenizer, model = get_model()
 
-# -----------------------------
-# Session state
-# -----------------------------
 defaults = {
     "analysis_done": False,
     "pred_label": None,
@@ -40,9 +37,6 @@ for key, value in defaults.items():
     if key not in st.session_state:
         st.session_state[key] = value
 
-# -----------------------------
-# Helpers
-# -----------------------------
 def reset_app():
     for key, value in defaults.items():
         st.session_state[key] = value
@@ -69,15 +63,9 @@ def get_support_message(decision):
             "India crisis support: iCall — 9152987821"
         )
     elif recommendation == "seek_professional_help":
-        return (
-            "warning",
-            "Speaking with a mental health professional would be a good next step."
-        )
+        return ("warning", "Speaking with a mental health professional would be a good next step.")
     elif recommendation == "consider_professional_help":
-        return (
-            "info",
-            "It may help to talk with a counsellor, therapist, or a trusted support person."
-        )
+        return ("info", "It may help to talk with a counsellor, therapist, or a trusted support person.")
     elif recommendation in ["monitorandselfcare", "monitor_and_self_care"]:
         return (
             "info",
@@ -101,6 +89,7 @@ def render_status_message(msg_type, text):
 
 # -----------------------------
 # Styling
+# -----------------------------
 st.markdown("""
 <style>
 :root {
