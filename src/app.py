@@ -3,9 +3,10 @@ from journal_model import load_model, predict_entry
 from decision_logic import decide_next_step, score_phq9, score_gad7
 
 st.set_page_config(
-    page_title="AI Journaling Support App",
+    page_title="MindJournal · AI Support",
     page_icon="🧠",
-    layout="centered"
+    layout="centered",
+    initial_sidebar_state="collapsed"
 )
 
 MODEL_SOURCE = "paras9o9/journal-distilbert-model"
@@ -20,6 +21,9 @@ def get_model():
 
 tokenizer, model = get_model()
 
+# ──────────────────────────────────────────────
+# Session state
+# ──────────────────────────────────────────────
 defaults = {
     "analysis_done": False,
     "pred_label": None,
@@ -31,478 +35,564 @@ defaults = {
     "phq_severity": None,
     "gad_total": None,
     "gad_severity": None,
-    "final_decision": None
+    "final_decision": None,
 }
-for key, value in defaults.items():
-    if key not in st.session_state:
-        st.session_state[key] = value
+for k, v in defaults.items():
+    if k not in st.session_state:
+        st.session_state[k] = v
 
+# ──────────────────────────────────────────────
+# Helpers
+# ──────────────────────────────────────────────
 def reset_app():
-    for key, value in defaults.items():
-        st.session_state[key] = value
+    for k, v in defaults.items():
+        st.session_state[k] = v
     st.rerun()
 
-def get_badge_info(pred_label):
-    label_map = {
-        "NEU": ("🟢 Neutral", "green"),
-        "HUMOR": ("😄 Humor", "blue"),
-        "MH": ("🟡 Mental health concern", "yellow"),
-        "SI": ("🔴 Suicidal ideation concern", "red")
-    }
-    return label_map.get(pred_label, (pred_label, "blue"))
-
-def get_support_message(decision):
-    recommendation = decision.get("recommendation", "general_positive_feedback")
-
-    if decision.get("showcrisiscard") or decision.get("show_crisis_card"):
-        return (
-            "error",
-            "This entry may reflect significant distress. "
-            "If you may be in immediate danger or may act on self-harm thoughts, "
-            "contact local emergency services now or reach out to a trusted person immediately. "
-            "India crisis support: iCall — 9152987821"
-        )
-    elif recommendation == "seek_professional_help":
-        return ("warning", "Speaking with a mental health professional would be a good next step.")
-    elif recommendation == "consider_professional_help":
-        return ("info", "It may help to talk with a counsellor, therapist, or a trusted support person.")
-    elif recommendation in ["monitorandselfcare", "monitor_and_self_care"]:
-        return (
-            "info",
-            "You may be going through a difficult period. Consider rest, self-care, and checking in with someone you trust."
-        )
-    else:
-        return (
-            "success",
-            "Thanks for sharing. The app did not detect high concern from this entry, but your feelings still matter."
-        )
-
-def render_status_message(msg_type, text):
-    if msg_type == "error":
-        st.error(text)
-    elif msg_type == "warning":
-        st.warning(text)
-    elif msg_type == "info":
-        st.info(text)
-    else:
-        st.success(text)
-
-# -----------------------------
-# Styling
-# -----------------------------
-st.markdown("""
-<style>
-:root {
-    --bg-grad-1: #f0f4ff;
-    --bg-grad-2: #e8f0fe;
-    --card-bg: rgba(255, 255, 255, 0.92);
-    --card-border: rgba(15, 23, 42, 0.08);
-    --text-main: #0f172a;
-    --text-soft: #475569;
-    --text-muted: #64748b;
-    --primary: #4f46e5;
-    --primary-dark: #4338ca;
-    --success-bg: #dcfce7;
-    --success-text: #166534;
-    --warn-bg: #fef3c7;
-    --warn-text: #92400e;
-    --danger-bg: #fee2e2;
-    --danger-text: #991b1b;
-    --info-bg: #dbeafe;
-    --info-text: #1d4ed8;
+BADGE_MAP = {
+    "NEU":   ("Neutral",                  "#16a34a", "#dcfce7", "🟢"),
+    "HUMOR": ("Humor / Positive",         "#2563eb", "#dbeafe", "😄"),
+    "MH":    ("Mental health concern",    "#d97706", "#fef3c7", "🟡"),
+    "SI":    ("Suicidal ideation signal", "#dc2626", "#fee2e2", "🔴"),
 }
 
-html, body, [class*="css"] {
-    font-family: "Inter", sans-serif;
+def get_badge(pred_label):
+    return BADGE_MAP.get(pred_label, (pred_label, "#6366f1", "#ede9fe", "•"))
+
+def get_support_message(decision):
+    rec = decision.get("recommendation", "general_positive_feedback")
+    if decision.get("showcrisiscard") or decision.get("show_crisis_card"):
+        return ("crisis",
+            "This entry may reflect significant distress. If you are in immediate danger, "
+            "contact emergency services or iCall India: 9152987821")
+    elif rec == "seek_professional_help":
+        return ("warn",
+            "Speaking with a mental health professional would be a helpful next step.")
+    elif rec == "consider_professional_help":
+        return ("info",
+            "Talking to a counsellor, therapist, or trusted person may be beneficial.")
+    elif rec in ["monitorandselfcare", "monitor_and_self_care"]:
+        return ("soft",
+            "You may be going through a difficult period. Rest, self-care, and checking in "
+            "with someone you trust can help.")
+    return ("ok",
+        "No high-concern signal detected. Your feelings still matter — keep journalling.")
+
+# ──────────────────────────────────────────────
+# CSS
+# ──────────────────────────────────────────────
+st.markdown("""
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+
+html, body, [class*="css"], .stApp {
+    font-family: 'Satoshi', 'Inter', system-ui, sans-serif !important;
+    -webkit-font-smoothing: antialiased;
 }
 
 .stApp {
-    background:
-        radial-gradient(circle at top left, rgba(99, 102, 241, 0.06), transparent 40%),
-        radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.05), transparent 40%),
-        linear-gradient(180deg, #e8eef8 0%, #dde7f2 100%);
+    background: #f1f5f9;
+    min-height: 100vh;
 }
 
 .block-container {
-    max-width: 860px;
-    padding-top: 1.8rem;
-    padding-bottom: 3rem;
+    max-width: 740px !important;
+    padding: 2rem 1.5rem 4rem !important;
+    margin: 0 auto !important;
 }
 
-.main-title {
-    font-size: 2.1rem;
-    font-weight: 800;
-    color: var(--text-main);
-    margin-bottom: 0.35rem;
-    line-height: 1.2;
-}
+#MainMenu, footer, header { visibility: hidden; }
+div[data-testid="stToolbar"] { display: none; }
 
-.subtle-text {
-    color: var(--text-soft);
-    font-size: 1rem;
-    line-height: 1.65;
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 2rem;
 }
-
-.disclaimer-chip {
-    display: inline-block;
-    margin-top: 0.9rem;
-    padding: 0.42rem 0.85rem;
+.app-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+.app-logo-icon {
+    width: 36px;
+    height: 36px;
+    background: #4f46e5;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+.app-logo-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+.app-logo-name span { color: #4f46e5; }
+.app-chip {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.3rem 0.75rem;
     border-radius: 999px;
-    border: 1px solid #fdba74;
     background: #fff7ed;
     color: #9a3412;
-    font-size: 0.82rem;
+    border: 1px solid #fed7aa;
+}
+
+.step-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 1px 3px rgba(15,23,42,0.04), 0 4px 12px rgba(15,23,42,0.04);
+}
+.step-label {
+    font-size: 0.7rem;
     font-weight: 700;
-}
-
-.section-heading {
-    font-size: 0.82rem;
     text-transform: uppercase;
-    letter-spacing: 0.09em;
-    color: var(--primary);
-    font-weight: 800;
-    margin-bottom: 0.3rem;
+    letter-spacing: 0.1em;
+    color: #6366f1;
+    margin-bottom: 0.4rem;
+}
+.card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.35rem;
+    line-height: 1.3;
+}
+.card-body {
+    font-size: 0.92rem;
+    color: #475569;
+    line-height: 1.65;
+    margin-bottom: 0.75rem;
+}
+.word-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
 }
 
-.block-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 22px;
-    padding: 1.4rem 1.4rem 1.1rem 1.4rem;
-    box-shadow: 0 4px 6px rgba(15, 23, 42, 0.04),
-                0 10px 30px rgba(15, 23, 42, 0.07);
-    margin-bottom: 1.1rem;
-    backdrop-filter: blur(12px);
-}
-
-.mini-note {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    margin-top: 0.55rem;
-    padding: 0.5rem 0.75rem;
-    background: #f8fafc;
-    border-radius: 10px;
-    border: 1px solid #e8edf3;
-}
-
-.badge {
-    display: inline-block;
-    padding: 0.45rem 1rem;
+.result-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 1.1rem;
     border-radius: 999px;
-    font-size: 0.9rem;
-    font-weight: 800;
-    margin: 0.4rem 0 0.8rem 0;
-    letter-spacing: 0.01em;
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
 }
 
-.badge.green {
-    background: var(--success-bg);
-    color: var(--success-text);
-    border: 1px solid #86efac;
-}
-
-.badge.yellow {
-    background: var(--warn-bg);
-    color: var(--warn-text);
-    border: 1px solid #fcd34d;
-}
-
-.badge.red {
-    background: var(--danger-bg);
-    color: var(--danger-text);
-    border: 1px solid #fca5a5;
-}
-
-.badge.blue {
-    background: var(--info-bg);
-    color: var(--info-text);
-    border: 1px solid #93c5fd;
-}
-
-.metric-strip {
+.metric-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.65rem;
-    margin: 0.3rem 0 0.9rem 0;
+    gap: 0.55rem;
+    margin: 0.5rem 0 1rem;
+}
+.metric-pill {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #334155;
+}
+.metric-pill-key {
+    color: #94a3b8;
+    font-weight: 500;
+    margin-right: 0.3rem;
 }
 
-.metric-pill {
-    background: #f1f5f9;
-    color: #1e293b;
-    border: 1px solid #dde3ec;
-    border-radius: 12px;
-    padding: 0.5rem 0.85rem;
-    font-size: 0.91rem;
+.conf-section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: #94a3b8;
+    margin-bottom: 0.8rem;
+}
+.conf-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.7rem;
+}
+.conf-label {
+    font-size: 0.82rem;
     font-weight: 600;
+    color: #334155;
+    width: 190px;
+    flex-shrink: 0;
+}
+.conf-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 999px;
+    overflow: hidden;
+}
+.conf-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+}
+.conf-pct {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #64748b;
+    width: 40px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.msg-box {
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    font-weight: 500;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+.msg-icon { font-size: 1.1rem; margin-top: 0.05rem; flex-shrink: 0; }
+.msg-crisis { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
+.msg-warn   { background: #fffbeb; color: #92400e; border: 1px solid #fcd34d; }
+.msg-info   { background: #eff6ff; color: #1d4ed8; border: 1px solid #93c5fd; }
+.msg-soft   { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+.msg-ok     { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+
+.q-header {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: #6366f1;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 0.9rem;
+}
+.q-result-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 0.75rem 0;
+}
+.q-result-pill {
+    border-radius: 10px;
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+.q-result-pill.min  { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+.q-result-pill.mild { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+.q-result-pill.mod  { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+.q-result-pill.sev  { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+.ui-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e2e8f0 30%, #e2e8f0 70%, transparent);
+    margin: 1rem 0;
+    border: none;
 }
 
 div[data-testid="stTextArea"] textarea {
-    border-radius: 16px !important;
-    border: 1.5px solid #64748b !important;
-    background: #cbd5e1 !important;
+    border-radius: 12px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    background: #f8fafc !important;
     color: #0f172a !important;
-    caret-color: #0f172a !important;
-    padding: 1rem !important;
-    font-size: 1rem !important;
-    line-height: 1.65 !important;
-    font-weight: 500 !important;
+    caret-color: #4f46e5 !important;
+    padding: 0.9rem 1rem !important;
+    font-size: 0.95rem !important;
+    line-height: 1.7 !important;
+    font-family: 'Satoshi', 'Inter', sans-serif !important;
+    font-weight: 400 !important;
+    resize: vertical !important;
+    transition: border-color 0.18s, box-shadow 0.18s !important;
 }
-
 div[data-testid="stTextArea"] textarea:focus {
-    border-color: #4338ca !important;
-    background: #bac7d8 !important;
-    color: #020617 !important;
-    caret-color: #020617 !important;
-    box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.16) !important;
+    border-color: #6366f1 !important;
+    background: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.12) !important;
+    outline: none !important;
 }
-
 div[data-testid="stTextArea"] textarea::placeholder {
-    color: #334155 !important;
-    opacity: 1 !important;
+    color: #94a3b8 !important;
+    font-style: italic !important;
 }
+div[data-testid="stTextArea"] label { display: none !important; }
 
 div[data-testid="stButton"] > button {
-    border-radius: 14px !important;
-    min-height: 46px !important;
-    font-weight: 800 !important;
-    font-size: 0.97rem !important;
+    border-radius: 10px !important;
+    min-height: 42px !important;
+    font-size: 0.88rem !important;
+    font-weight: 700 !important;
+    font-family: 'Satoshi', 'Inter', sans-serif !important;
     letter-spacing: 0.01em !important;
-    border: none !important;
-    transition: all 0.18s ease !important;
+    transition: all 0.16s ease !important;
+    cursor: pointer !important;
 }
-
+button[kind="primary"],
 div[data-testid="stBaseButton-primary"] > button {
-    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+    background: #4f46e5 !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35) !important;
+    border: none !important;
+    box-shadow: 0 1px 3px rgba(79,70,229,0.3), 0 4px 12px rgba(79,70,229,0.2) !important;
 }
-
+button[kind="primary"]:hover,
 div[data-testid="stBaseButton-primary"] > button:hover {
-    filter: brightness(1.07) !important;
+    background: #4338ca !important;
+    box-shadow: 0 4px 16px rgba(79,70,229,0.35) !important;
     transform: translateY(-1px) !important;
-    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4) !important;
 }
-
+button[kind="secondary"],
 div[data-testid="stBaseButton-secondary"] > button {
     background: #ffffff !important;
-    color: #334155 !important;
-    border: 1.5px solid #dde3ec !important;
+    color: #475569 !important;
+    border: 1.5px solid #e2e8f0 !important;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.06) !important;
 }
-
+button[kind="secondary"]:hover,
 div[data-testid="stBaseButton-secondary"] > button:hover {
     background: #f8fafc !important;
     border-color: #cbd5e1 !important;
+    color: #0f172a !important;
 }
 
 div[data-testid="stExpander"] details {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid #dde3ec !important;
-    border-radius: 18px !important;
-    padding: 0.2rem 0.4rem !important;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05) !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 1px 3px rgba(15,23,42,0.04) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
 }
-
 div[data-testid="stExpander"] summary {
     font-weight: 700 !important;
     color: #1e293b !important;
-    font-size: 0.97rem !important;
+    font-size: 0.9rem !important;
+    padding: 1rem 1.1rem !important;
+    border-radius: 14px !important;
+    transition: background 0.15s !important;
+}
+div[data-testid="stExpander"] summary:hover { background: #f8fafc !important; }
+div[data-testid="stExpander"] details > div { padding: 0.25rem 1.1rem 1.1rem !important; }
+
+div[data-testid="stSelectbox"] > div > div {
+    border-radius: 10px !important;
+    border-color: #cbd5e1 !important;
+    background: #f8fafc !important;
+    font-size: 0.88rem !important;
 }
 
-div[data-testid="stSelectbox"] > div {
-    border-radius: 12px !important;
+div[data-testid="stAlert"] { border-radius: 12px !important; font-size: 0.9rem !important; }
+div[data-testid="stProgressBar"] > div { border-radius: 999px !important; }
+
+div[data-testid="stFormSubmitButton"] > button {
+    background: #4f46e5 !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 10px !important;
+    min-height: 42px !important;
+    font-size: 0.88rem !important;
+    font-weight: 700 !important;
+    box-shadow: 0 1px 3px rgba(79,70,229,0.25) !important;
+    transition: all 0.16s ease !important;
+}
+div[data-testid="stFormSubmitButton"] > button:hover {
+    background: #4338ca !important;
+    transform: translateY(-1px) !important;
 }
 
-div[data-testid="stAlert"] {
-    border-radius: 16px !important;
-}
-
-div[data-testid="stProgressBar"] > div {
-    border-radius: 999px !important;
-}
-
-hr {
-    border: none;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #c7d2e8, transparent);
-    margin: 1.1rem 0 0.5rem 0;
-}
-
-.result-label {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--text-main);
-    margin-bottom: 0.2rem;
-}
-
-.helper-copy {
-    color: var(--text-soft);
-    font-size: 0.96rem;
-    line-height: 1.65;
-    margin-bottom: 0.5rem;
-}
-
-.question-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--text-main);
-    margin-top: 0.5rem;
-    margin-bottom: 0.2rem;
-    padding-bottom: 0.35rem;
-    border-bottom: 2px solid #e8edf3;
-}
-
-.footer-note {
+.app-footer {
     text-align: center;
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid #e8edf3;
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #e2e8f0;
+    line-height: 1.6;
 }
 </style>
 """, unsafe_allow_html=True)
-# -----------------------------
-# Hero
-# -----------------------------
-st.markdown('<div class="block-card">', unsafe_allow_html=True)
-st.markdown('<div class="main-title">🧠 AI Journaling Support</div>', unsafe_allow_html=True)
+
+# ──────────────────────────────────────────────
+# Header
+# ──────────────────────────────────────────────
+st.markdown("""
+<div class="app-header">
+  <div class="app-logo">
+    <div class="app-logo-icon">🧠</div>
+    <div class="app-logo-name">Mind<span>Journal</span></div>
+  </div>
+  <div class="app-chip">Not for emergency use</div>
+</div>
+""", unsafe_allow_html=True)
+
+# ──────────────────────────────────────────────
+# Step 1 — Journal Entry
+# ──────────────────────────────────────────────
+st.markdown("""
+<div class="step-card">
+  <div class="step-label">Step 1 of 3 · Your entry</div>
+  <div class="card-title">What's on your mind today?</div>
+  <div class="card-body">Write freely about your day, your thoughts, or anything that has been weighing on you. Your entry is only processed locally.</div>
+</div>
+""", unsafe_allow_html=True)
+
+user_text = st.text_area(
+    "Journal entry",
+    height=200,
+    placeholder="e.g. I've been feeling emotionally drained lately. Some days I manage well, but other times everything feels heavier than usual…",
+    label_visibility="collapsed",
+    key="user_text"
+)
+
+word_count = len(user_text.split()) if user_text.strip() else 0
+
+if word_count == 0:
+    wc_color = "#94a3b8"
+    wc_hint  = "Try writing at least 2–3 sentences for better feedback."
+elif word_count < 10:
+    wc_color = "#d97706"
+    wc_hint  = "A bit short — a few more words helps the model."
+elif word_count <= 150:
+    wc_color = "#16a34a"
+    wc_hint  = "Good length."
+else:
+    wc_color = "#d97706"
+    wc_hint  = "Long entry — the model reads up to ~512 tokens."
+
 st.markdown(
-    '<div class="subtle-text">Reflect on your thoughts in a private space and receive supportive, research-oriented feedback based on your journal entry.</div>',
+    f'<div class="word-count"><span style="color:{wc_color};font-weight:700">{word_count} words</span>'
+    f'&nbsp;·&nbsp; {wc_hint}</div>',
     unsafe_allow_html=True
 )
-st.markdown(
-    '<div class="disclaimer-chip">Not a diagnosis tool • Not for emergency use</div>',
-    unsafe_allow_html=True
-)
-st.markdown('</div>', unsafe_allow_html=True)
 
-# -----------------------------
-# Entry section
-# -----------------------------
-entry_container = st.container()
-with entry_container:
-    st.markdown('<div class="block-card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-heading">Step 1 • Journal entry</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="helper-copy">Take a breath and write freely about how your day feels, what is weighing on you, or what thoughts keep returning.</div>',
-        unsafe_allow_html=True
-    )
+col1, col2 = st.columns([5, 1])
+with col1:
+    analyse = st.button("Analyse my entry", type="primary", use_container_width=True)
+with col2:
+    reset = st.button("Reset", use_container_width=True)
 
-    user_text = st.text_area(
-        "Write about how you are feeling today",
-        height=220,
-        placeholder="Example: I’ve been feeling emotionally tired lately. I’m trying to manage things, but some days feel heavier than usual.",
-        label_visibility="collapsed",
-        key="user_text"
-    )
-
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        analyse = st.button("Analyse entry", type="primary", use_container_width=True)
-    with col2:
-        reset = st.button("Reset", use_container_width=True)
-
-    word_count = len(user_text.split()) if user_text.strip() else 0
-    st.markdown(
-        f'<div class="mini-note">Word count: {word_count} • Writing 2–5 sentences usually gives more useful feedback.</div>',
-        unsafe_allow_html=True
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# -----------------------------
-# Reset
-# -----------------------------
 if reset:
     reset_app()
 
-# -----------------------------
-# Analyse
-# -----------------------------
+# ──────────────────────────────────────────────
+# Analyse logic
+# ──────────────────────────────────────────────
 if analyse:
     if not user_text.strip():
-        st.warning("Please enter a journal entry before analysing.")
+        st.warning("Please write something before analysing.")
+    elif word_count < 3:
+        st.warning("Your entry is very short. Write a few more words for useful feedback.")
     else:
-        with st.spinner("Reading your entry and preparing feedback..."):
+        with st.spinner("Analysing your entry…"):
             pred_label, prob_dict = predict_entry(user_text, tokenizer, model)
             decision = decide_next_step(pred_label, prob_dict)
 
-        st.session_state.analysis_done = True
-        st.session_state.pred_label = pred_label
-        st.session_state.prob_dict = prob_dict
-        st.session_state.decision = decision
-        st.session_state.q_submitted = False
-        st.session_state.phq_total = None
-        st.session_state.phq_severity = None
-        st.session_state.gad_total = None
-        st.session_state.gad_severity = None
+        st.session_state.analysis_done  = True
+        st.session_state.pred_label     = pred_label
+        st.session_state.prob_dict      = prob_dict
+        st.session_state.decision       = decision
+        st.session_state.q_submitted    = False
+        st.session_state.phq_total      = None
+        st.session_state.phq_severity   = None
+        st.session_state.gad_total      = None
+        st.session_state.gad_severity   = None
         st.session_state.final_decision = None
 
-# -----------------------------
+# ──────────────────────────────────────────────
 # Results
-# -----------------------------
+# ──────────────────────────────────────────────
 if st.session_state.analysis_done:
     pred_label = st.session_state.pred_label
-    prob_dict = st.session_state.prob_dict
-    decision = st.session_state.decision
+    prob_dict  = st.session_state.prob_dict
+    decision   = st.session_state.decision
 
-    badge_text, badge_color = get_badge_info(pred_label)
-
-    st.markdown('<div class="block-card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-heading">Step 2 • Analysis result</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="badge {badge_color}">{badge_text}</div>', unsafe_allow_html=True)
-    st.markdown('<div class="result-label">Current model interpretation</div>', unsafe_allow_html=True)
-
-    st.markdown(
-        f"""
-        <div class="metric-strip">
-            <div class="metric-pill">Risk tier: {decision['risk_tier'].capitalize()}</div>
-            <div class="metric-pill">Top signal: {pred_label}</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="helper-copy">These confidence bars show how strongly the model leaned toward each class for this journal entry.</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.write("#### Confidence across classes")
-
-    ordered_labels = ["NEU", "HUMOR", "MH", "SI"]
-    friendly_names = {
-        "NEU": "Neutral",
-        "HUMOR": "Humor",
-        "MH": "Mental health concern",
-        "SI": "Suicidal ideation concern"
-    }
-
-    for label in ordered_labels:
-        p = float(prob_dict.get(label, 0.0))
-        st.progress(p, text=f"{friendly_names[label]} • {p:.1%}")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # Support section
-    st.markdown('<div class="block-card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-heading">Step 3 • Support guidance</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="helper-copy">This section suggests a reasonable next step based on the current screening result.</div>',
-        unsafe_allow_html=True
-    )
-
+    label_text, label_color, label_bg, label_icon = get_badge(pred_label)
     msg_type, msg_text = get_support_message(decision)
-    render_status_message(msg_type, msg_text)
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    # Step 2 card
+    st.markdown("""
+    <div class="step-card">
+      <div class="step-label">Step 2 of 3 · Analysis result</div>
+      <div class="card-title">Model interpretation</div>
+    """, unsafe_allow_html=True)
 
-    # Questionnaires
+    st.markdown(
+        f'<div class="result-badge" style="background:{label_bg};color:{label_color};border:1px solid {label_color}33">'
+        f'{label_icon}&nbsp;&nbsp;{label_text}</div>',
+        unsafe_allow_html=True
+    )
+
+    risk_tier = decision.get("risk_tier", "low").capitalize()
+    st.markdown(
+        f'<div class="metric-row">'
+        f'<div class="metric-pill"><span class="metric-pill-key">Risk tier</span>{risk_tier}</div>'
+        f'<div class="metric-pill"><span class="metric-pill-key">Top signal</span>{pred_label}</div>'
+        f'</div>',
+        unsafe_allow_html=True
+    )
+
+    label_order = [
+        ("NEU",   "Neutral",                  "#16a34a"),
+        ("HUMOR", "Humor / Positive",         "#2563eb"),
+        ("MH",    "Mental health concern",    "#d97706"),
+        ("SI",    "Suicidal ideation signal", "#dc2626"),
+    ]
+
+    st.markdown('<div class="conf-section-title">Confidence across classes</div>', unsafe_allow_html=True)
+    for code, name, bar_color in label_order:
+        p = float(prob_dict.get(code, 0.0))
+        pct_str   = f"{p:.0%}"
+        bar_width = f"{p*100:.1f}%"
+        st.markdown(
+            f'<div class="conf-row">'
+            f'<div class="conf-label">{name}</div>'
+            f'<div class="conf-bar-bg"><div class="conf-bar-fill" style="width:{bar_width};background:{bar_color}"></div></div>'
+            f'<div class="conf-pct">{pct_str}</div>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # Step 3 card
+    MSG_ICONS   = {"crisis": "⛑️", "warn": "⚠️", "info": "💬", "soft": "🌿", "ok": "✅"}
+    MSG_CLASSES = {
+        "crisis": "msg-crisis", "warn": "msg-warn",
+        "info": "msg-info", "soft": "msg-soft", "ok": "msg-ok"
+    }
+    icon = MSG_ICONS.get(msg_type, "•")
+    cls  = MSG_CLASSES.get(msg_type, "msg-ok")
+
+    st.markdown(
+        f'<div class="step-card">'
+        f'<div class="step-label">Step 3 of 3 · Guidance</div>'
+        f'<div class="card-title">Suggested next step</div>'
+        f'<div class="msg-box {cls}"><span class="msg-icon">{icon}</span><span>{msg_text}</span></div>'
+        f'</div>',
+        unsafe_allow_html=True
+    )
+
+    # Optional questionnaires
     show_prompt = decision.get("showphqgadprompt") or decision.get("show_phq_gad_prompt")
     if show_prompt:
-        with st.expander("Optional mood and anxiety questionnaires", expanded=False):
+        with st.expander("📋  Optional: PHQ-9 & GAD-7 Check-in", expanded=False):
             st.markdown(
-                '<div class="helper-copy">You can complete PHQ-9 and GAD-7 for a more structured mood and anxiety check-in.</div>',
+                '<div class="card-body">These brief validated questionnaires give a more structured check-in on mood and anxiety.</div>',
                 unsafe_allow_html=True
             )
 
@@ -510,23 +600,22 @@ if st.session_state.analysis_done:
                 0: "Not at all",
                 1: "Several days",
                 2: "More than half the days",
-                3: "Nearly every day"
+                3: "Nearly every day",
             }
 
             with st.form("questionnaire_form"):
-                st.markdown('<div class="question-title">PHQ-9</div>', unsafe_allow_html=True)
+                st.markdown('<div class="q-header">PHQ-9 · Depression screen</div>', unsafe_allow_html=True)
                 phq_questions = [
                     "Little interest or pleasure in doing things",
                     "Feeling down, depressed, or hopeless",
                     "Trouble falling or staying asleep, or sleeping too much",
                     "Feeling tired or having little energy",
                     "Poor appetite or overeating",
-                    "Feeling bad about yourself — or that you are a failure or have let yourself or your family down",
+                    "Feeling bad about yourself, or feeling like a failure",
                     "Trouble concentrating on things",
-                    "Moving or speaking so slowly that other people could have noticed, or the opposite — being so fidgety or restless",
-                    "Thoughts that you would be better off dead or of hurting yourself"
+                    "Moving or speaking unusually slowly — or being unusually fidgety",
+                    "Thoughts that you would be better off dead, or of hurting yourself",
                 ]
-
                 phq_answers = []
                 for i, q in enumerate(phq_questions):
                     val = st.selectbox(
@@ -538,7 +627,7 @@ if st.session_state.analysis_done:
                     phq_answers.append(val)
 
                 st.markdown("<br>", unsafe_allow_html=True)
-                st.markdown('<div class="question-title">GAD-7</div>', unsafe_allow_html=True)
+                st.markdown('<div class="q-header">GAD-7 · Anxiety screen</div>', unsafe_allow_html=True)
                 gad_questions = [
                     "Feeling nervous, anxious, or on edge",
                     "Not being able to stop or control worrying",
@@ -546,9 +635,8 @@ if st.session_state.analysis_done:
                     "Trouble relaxing",
                     "Being so restless that it is hard to sit still",
                     "Becoming easily annoyed or irritable",
-                    "Feeling afraid as if something awful might happen"
+                    "Feeling afraid as if something awful might happen",
                 ]
-
                 gad_answers = []
                 for i, q in enumerate(gad_questions):
                     val = st.selectbox(
@@ -564,54 +652,58 @@ if st.session_state.analysis_done:
             if submit_q:
                 phq_total, phq_severity = score_phq9(phq_answers)
                 gad_total, gad_severity = score_gad7(gad_answers)
-
                 final_decision = decide_next_step(
-                    pred_label,
-                    prob_dict,
+                    pred_label, prob_dict,
                     phq9_items=phq_answers,
                     gad7_items=gad_answers
                 )
-
-                st.session_state.q_submitted = True
-                st.session_state.phq_total = phq_total
-                st.session_state.phq_severity = phq_severity
-                st.session_state.gad_total = gad_total
-                st.session_state.gad_severity = gad_severity
+                st.session_state.q_submitted    = True
+                st.session_state.phq_total      = phq_total
+                st.session_state.phq_severity   = phq_severity
+                st.session_state.gad_total      = gad_total
+                st.session_state.gad_severity   = gad_severity
                 st.session_state.final_decision = final_decision
 
             if st.session_state.q_submitted:
-                final_decision = st.session_state.final_decision
+                fd     = st.session_state.final_decision
+                ph_sev = st.session_state.phq_severity or ""
+                ga_sev = st.session_state.gad_severity or ""
 
-                st.markdown("<hr>", unsafe_allow_html=True)
-                st.write("#### Questionnaire results")
+                def sev_class(s):
+                    s = s.lower()
+                    if "severe" in s:   return "sev"
+                    if "moderate" in s: return "mod"
+                    if "mild" in s:     return "mild"
+                    return "min"
+
+                st.markdown('<div class="ui-divider"></div>', unsafe_allow_html=True)
+                st.markdown('<div class="card-title" style="margin-bottom:0.6rem">Questionnaire results</div>', unsafe_allow_html=True)
                 st.markdown(
-                    f"""
-                    <div class="metric-strip">
-                        <div class="metric-pill">PHQ-9: {st.session_state.phq_total} — {st.session_state.phq_severity.capitalize()}</div>
-                        <div class="metric-pill">GAD-7: {st.session_state.gad_total} — {st.session_state.gad_severity.capitalize()}</div>
-                    </div>
-                    """,
+                    f'<div class="q-result-row">'
+                    f'<div class="q-result-pill {sev_class(ph_sev)}">PHQ-9: {st.session_state.phq_total} · {ph_sev.capitalize()}</div>'
+                    f'<div class="q-result-pill {sev_class(ga_sev)}">GAD-7: {st.session_state.gad_total} · {ga_sev.capitalize()}</div>'
+                    f'</div>',
                     unsafe_allow_html=True
                 )
 
-                if final_decision.get("suicidalityflag") or final_decision.get("suicidality_flag"):
+                if fd.get("suicidalityflag") or fd.get("suicidality_flag"):
                     st.error(
                         "You indicated possible self-harm thoughts on PHQ-9 item 9. "
-                        "Please seek immediate support from a trusted person, local emergency service, "
-                        "or iCall India at 9152987821."
+                        "Please seek immediate support. iCall India: **9152987821**"
                     )
-                elif final_decision.get("recommendation") == "seek_professional_help":
-                    st.warning(
-                        "These results suggest that professional mental health support would be advisable."
-                    )
-                elif final_decision.get("recommendation") == "consider_professional_help":
-                    st.info(
-                        "These results suggest that talking to a counsellor or therapist may help."
-                    )
+                elif fd.get("recommendation") == "seek_professional_help":
+                    st.warning("These results suggest professional mental health support would be advisable.")
+                elif fd.get("recommendation") == "consider_professional_help":
+                    st.info("These results suggest that talking to a counsellor or therapist may help.")
                 else:
-                    st.success("Thank you for completing the check-in.")
+                    st.success("Thank you for completing the check-in. Keep taking care of yourself.")
 
-st.markdown(
-    '<div class="footer-note">Research prototype for journal-based emotional risk screening.</div>',
-    unsafe_allow_html=True
-)
+# ──────────────────────────────────────────────
+# Footer
+# ──────────────────────────────────────────────
+st.markdown("""
+<div class="app-footer">
+  Research prototype &nbsp;·&nbsp; Not a clinical tool &nbsp;·&nbsp; Not for emergency use<br>
+  If you are in crisis, contact <strong>iCall India: 9152987821</strong> or local emergency services.
+</div>
+""", unsafe_allow_html=True)
