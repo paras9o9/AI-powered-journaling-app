@@ -48,17 +48,24 @@ def reset_app():
     st.rerun()
 
 
-# ── Label / badge helpers ──────────────────────────────────────────────────────
+# ── Helpers ────────────────────────────────────────────────────────────────────
 BADGE_MAP = {
-    "NEU":   ("Neutral",                  "#16a34a", "#dcfce7", "🟢"),
-    "HUMOR": ("Humor / Positive",         "#2563eb", "#dbeafe", "😄"),
-    "MH":    ("Mental health concern",    "#d97706", "#fef3c7", "🟡"),
-    "SI":    ("Suicidal ideation signal", "#dc2626", "#fee2e2", "🔴"),
+    "NEU":   ("Neutral",                  "#16a34a", "#f0fdf4", "#166534", "🟢"),
+    "HUMOR": ("Humor / Positive",         "#2563eb", "#eff6ff", "#1e40af", "😄"),
+    "MH":    ("Mental health concern",    "#d97706", "#fef3c7", "#92400e", "🟡"),
+    "SI":    ("Suicidal ideation signal", "#dc2626", "#fef2f2", "#991b1b", "🔴"),
 }
+
+LABEL_ORDER = [
+    ("NEU",   "Neutral",                  "#16a34a"),
+    ("HUMOR", "Humor / Positive",         "#2563eb"),
+    ("MH",    "Mental health concern",    "#d97706"),
+    ("SI",    "Suicidal ideation signal", "#dc2626"),
+]
 
 
 def get_badge(label):
-    return BADGE_MAP.get(label, (label, "#6366f1", "#ede9fe", "•"))
+    return BADGE_MAP.get(label, (label, "#6366f1", "#eef2ff", "#3730a3", "•"))
 
 
 def get_support_message(decision):
@@ -82,96 +89,108 @@ def get_support_message(decision):
     return ("ok", "No high-concern signal detected. Your feelings still matter — keep journalling.")
 
 
-# ── CSS ────────────────────────────────────────────────────────────────────────
+# ── Styles ────────────────────────────────────────────────────────────────────
 st.markdown(
     """
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ── Reset / base ── */
 html, body, [class*="css"], .stApp {
-    font-family: 'Satoshi', 'Inter', system-ui, sans-serif !important;
+    font-family: 'Inter', system-ui, sans-serif !important;
     -webkit-font-smoothing: antialiased;
 }
-.stApp { background: #f1f5f9; min-height: 100vh; }
+.stApp { background: #f8fafc; min-height: 100vh; }
 .block-container {
-    max-width: 740px !important;
-    padding: 2rem 1.5rem 4rem !important;
+    max-width: 700px !important;
+    padding: 1.75rem 1.5rem 4rem !important;
     margin: 0 auto !important;
 }
 #MainMenu, footer, header { visibility: hidden; }
 div[data-testid="stToolbar"] { display: none; }
 
-/* ── Header ── */
-.mj-header {
-    display: flex;
-    align-items: center;
+/* ── Top bar ── */
+.mj-topbar {
+    display: flex; align-items: center;
     justify-content: space-between;
-    padding-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
     border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
-.mj-logo { display: flex; align-items: center; gap: 0.6rem; }
+.mj-logo { display: flex; align-items: center; gap: 10px; }
 .mj-logo-icon {
-    width: 36px; height: 36px;
-    background: #4f46e5; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem;
+    width: 34px; height: 34px; background: #4f46e5;
+    border-radius: 9px; display: flex; align-items: center;
+    justify-content: center; font-size: 15px;
 }
-.mj-logo-name { font-size: 1.05rem; font-weight: 700; color: #0f172a; }
-.mj-logo-name span { color: #4f46e5; }
-.mj-chip {
-    font-size: 0.72rem; font-weight: 600;
-    padding: 0.3rem 0.75rem; border-radius: 999px;
-    background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa;
+.mj-logo-name { font-size: 15px; font-weight: 700; color: #0f172a; letter-spacing: -0.01em; }
+.mj-logo-name em { color: #4f46e5; font-style: normal; }
+.mj-emergency-chip {
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 999px;
+    background: #fff7ed; color: #9a3412;
+    border: 1px solid #fed7aa; letter-spacing: 0.01em;
+}
+
+/* ── Step tabs ── */
+.mj-tabs {
+    display: flex; gap: 4px; background: #f1f5f9;
+    border-radius: 11px; padding: 3px; margin-bottom: 1.5rem;
+}
+.mj-tab {
+    flex: 1; text-align: center; padding: 7px 4px;
+    border-radius: 8px; font-size: 12px; font-weight: 600;
+    color: #64748b;
+}
+.mj-tab.active {
+    background: #fff; color: #4f46e5;
+    box-shadow: 0 1px 3px rgba(15,23,42,0.08), 0 0 0 0.5px #e2e8f0;
 }
 
 /* ── Cards ── */
 .mj-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: #fff;
+    border: 1px solid #e8edf3;
     border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 1.25rem;
-    box-shadow: 0 1px 3px rgba(15,23,42,.04), 0 4px 12px rgba(15,23,42,.04);
+    padding: 1.4rem 1.5rem;
+    margin-bottom: 1rem;
 }
-.mj-step-label {
-    font-size: 0.7rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .1em;
-    color: #6366f1; margin-bottom: 0.4rem;
+.mj-card-label {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.09em;
+    color: #6366f1; margin-bottom: 6px;
 }
 .mj-card-title {
-    font-size: 1.05rem; font-weight: 700;
-    color: #0f172a; margin-bottom: 0.35rem; line-height: 1.3;
+    font-size: 17px; font-weight: 700;
+    color: #0f172a; margin-bottom: 5px; letter-spacing: -0.01em;
 }
 .mj-card-body {
-    font-size: 0.92rem; color: #475569;
-    line-height: 1.65; margin-bottom: 0;
+    font-size: 14px; color: #64748b; line-height: 1.6; margin: 0;
 }
 
 /* ── Word count ── */
 .mj-wc {
-    font-size: 0.78rem; color: #94a3b8;
-    font-weight: 500; margin: 0.4rem 0 0.75rem;
+    display: flex; align-items: center; gap: 7px;
+    font-size: 12px; color: #94a3b8; margin: 8px 0 14px; font-weight: 500;
 }
 
-/* ── Textarea overrides ── */
+/* ── Textarea ── */
+div[data-testid="stTextArea"] { margin-top: 10px; }
 div[data-testid="stTextArea"] textarea {
-    border-radius: 12px !important;
+    border-radius: 11px !important;
     border: 1.5px solid #cbd5e1 !important;
     background: #f8fafc !important;
     color: #0f172a !important;
     caret-color: #4f46e5 !important;
-    padding: 0.9rem 1rem !important;
-    font-size: 0.95rem !important;
-    line-height: 1.7 !important;
-    font-family: 'Satoshi', 'Inter', sans-serif !important;
+    padding: 13px 14px !important;
+    font-size: 14px !important;
+    line-height: 1.65 !important;
+    font-family: 'Inter', system-ui, sans-serif !important;
     resize: vertical !important;
-    transition: border-color .18s, box-shadow .18s !important;
+    transition: border-color 0.15s, box-shadow 0.15s !important;
 }
 div[data-testid="stTextArea"] textarea:focus {
     border-color: #6366f1 !important;
-    background: #ffffff !important;
-    box-shadow: 0 0 0 3px rgba(99,102,241,.12) !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.1) !important;
     outline: none !important;
 }
 div[data-testid="stTextArea"] textarea::placeholder {
@@ -183,33 +202,31 @@ div[data-testid="stButton"] > button,
 div[data-testid="stFormSubmitButton"] > button {
     border-radius: 10px !important;
     min-height: 42px !important;
-    font-size: 0.88rem !important;
+    font-size: 13.5px !important;
     font-weight: 700 !important;
-    font-family: 'Satoshi', 'Inter', sans-serif !important;
-    letter-spacing: .01em !important;
-    transition: all .16s ease !important;
+    font-family: 'Inter', system-ui, sans-serif !important;
+    letter-spacing: 0.01em !important;
+    transition: all 0.14s ease !important;
     cursor: pointer !important;
 }
-/* Primary */
 div[data-testid="stBaseButton-primary"] > button,
 div[data-testid="stFormSubmitButton"] > button {
     background: #4f46e5 !important;
-    color: #ffffff !important;
+    color: #fff !important;
     border: none !important;
-    box-shadow: 0 1px 3px rgba(79,70,229,.3), 0 4px 12px rgba(79,70,229,.2) !important;
+    box-shadow: 0 1px 2px rgba(79,70,229,0.25) !important;
 }
 div[data-testid="stBaseButton-primary"] > button:hover,
 div[data-testid="stFormSubmitButton"] > button:hover {
     background: #4338ca !important;
-    box-shadow: 0 4px 16px rgba(79,70,229,.35) !important;
+    box-shadow: 0 4px 12px rgba(79,70,229,0.3) !important;
     transform: translateY(-1px) !important;
 }
-/* Secondary */
 div[data-testid="stBaseButton-secondary"] > button {
-    background: #ffffff !important;
+    background: #fff !important;
     color: #475569 !important;
     border: 1.5px solid #e2e8f0 !important;
-    box-shadow: 0 1px 2px rgba(15,23,42,.06) !important;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.05) !important;
 }
 div[data-testid="stBaseButton-secondary"] > button:hover {
     background: #f8fafc !important;
@@ -217,129 +234,144 @@ div[data-testid="stBaseButton-secondary"] > button:hover {
     color: #0f172a !important;
 }
 
-/* ── Expander ── */
-div[data-testid="stExpander"] details {
-    background: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 14px !important;
-    box-shadow: 0 1px 3px rgba(15,23,42,.04) !important;
-    overflow: hidden !important;
-}
-div[data-testid="stExpander"] summary {
-    font-weight: 700 !important;
-    color: #1e293b !important;
-    font-size: 0.9rem !important;
-    padding: 1rem 1.1rem !important;
-    transition: background .15s !important;
-}
-div[data-testid="stExpander"] summary:hover { background: #f8fafc !important; }
-div[data-testid="stExpander"] details > div { padding: 0.25rem 1.1rem 1.1rem !important; }
-
-/* ── Selectbox ── */
-div[data-testid="stSelectbox"] > div > div {
-    border-radius: 10px !important;
-    border-color: #cbd5e1 !important;
-    background: #f8fafc !important;
-    font-size: 0.88rem !important;
-}
-
 /* ── Result badge ── */
 .mj-badge {
-    display: inline-flex; align-items: center; gap: 0.45rem;
-    padding: 0.5rem 1.1rem; border-radius: 999px;
-    font-size: 0.88rem; font-weight: 700; margin-bottom: 1rem;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 15px; border-radius: 999px;
+    font-size: 13px; font-weight: 700; margin-bottom: 14px;
 }
 
 /* ── Metric pills ── */
-.mj-metric-row { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 0.5rem 0 1rem; }
+.mj-pills { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
 .mj-pill {
     background: #f8fafc; border: 1px solid #e2e8f0;
-    border-radius: 10px; padding: 0.45rem 0.85rem;
-    font-size: 0.82rem; font-weight: 600; color: #334155;
+    border-radius: 8px; padding: 6px 12px;
+    font-size: 12px; font-weight: 600; color: #334155;
 }
-.mj-pill-key { color: #94a3b8; font-weight: 500; margin-right: 0.3rem; }
+.mj-pill-key { color: #94a3b8; font-weight: 500; margin-right: 4px; }
 
 /* ── Confidence bars ── */
-.mj-conf-title {
-    font-size: 0.72rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .09em;
-    color: #94a3b8; margin-bottom: 0.8rem;
+.mj-conf-head {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: #94a3b8; margin-bottom: 11px;
 }
-.mj-conf-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.7rem; }
-.mj-conf-label { font-size: 0.82rem; font-weight: 600; color: #334155; width: 190px; flex-shrink: 0; }
-.mj-conf-bg { flex: 1; height: 8px; background: #f1f5f9; border-radius: 999px; overflow: hidden; }
-.mj-conf-fill { height: 100%; border-radius: 999px; }
-.mj-conf-pct { font-size: 0.78rem; font-weight: 700; color: #64748b; width: 40px; text-align: right; }
+.mj-conf-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+.mj-conf-name {
+    font-size: 12.5px; font-weight: 600; color: #334155;
+    width: 175px; flex-shrink: 0;
+}
+.mj-conf-track {
+    flex: 1; height: 7px; background: #f1f5f9;
+    border-radius: 99px; overflow: hidden;
+}
+.mj-conf-fill { height: 100%; border-radius: 99px; }
+.mj-conf-pct { font-size: 12px; font-weight: 700; color: #64748b; width: 34px; text-align: right; }
 
 /* ── Message boxes ── */
 .mj-msg {
-    border-radius: 12px; padding: 0.9rem 1.1rem;
-    font-size: 0.9rem; line-height: 1.65; font-weight: 500;
-    display: flex; gap: 0.75rem; align-items: flex-start;
+    border-radius: 11px; padding: 13px 15px;
+    font-size: 13.5px; line-height: 1.6; font-weight: 500;
+    display: flex; gap: 11px; align-items: flex-start; margin-top: 2px;
 }
-.mj-msg-icon { font-size: 1.1rem; margin-top: 0.05rem; flex-shrink: 0; }
+.mj-msg-icon { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
 .mj-crisis { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
 .mj-warn   { background: #fffbeb; color: #92400e; border: 1px solid #fcd34d; }
 .mj-info   { background: #eff6ff; color: #1d4ed8; border: 1px solid #93c5fd; }
-.mj-soft   { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
-.mj-ok     { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+.mj-soft   { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+.mj-ok     { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
 
-/* ── Questionnaire ── */
-.mj-q-header {
-    font-size: 0.72rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .09em;
-    color: #6366f1; padding-bottom: 0.5rem;
-    border-bottom: 1px solid #e2e8f0; margin-bottom: 0.9rem;
+/* ── Questionnaire results ── */
+.mj-q-sec-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: #6366f1;
+    padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; margin-bottom: 12px;
 }
-.mj-q-result-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0.75rem 0; }
-.mj-q-pill { border-radius: 10px; padding: 0.55rem 1rem; font-size: 0.85rem; font-weight: 700; }
-.mj-q-min  { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+.mj-q-pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 6px; }
+.mj-q-pill { border-radius: 9px; padding: 7px 13px; font-size: 13px; font-weight: 700; }
+.mj-q-min  { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
 .mj-q-mild { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
 .mj-q-mod  { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
-.mj-q-sev  { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+.mj-q-sev  { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
 
-/* ── Divider ── */
-.mj-divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #e2e8f0 30%, #e2e8f0 70%, transparent);
-    margin: 1rem 0; border: none;
+/* ── Expander ── */
+div[data-testid="stExpander"] details {
+    background: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+}
+div[data-testid="stExpander"] summary {
+    font-weight: 700 !important; color: #1e293b !important;
+    font-size: 14px !important; padding: 14px 16px !important;
+    transition: background 0.12s !important;
+}
+div[data-testid="stExpander"] summary:hover { background: #fafafa !important; }
+div[data-testid="stExpander"] details > div { padding: 0 16px 16px !important; }
+
+/* ── Selectbox ── */
+div[data-testid="stSelectbox"] > div > div {
+    border-radius: 9px !important;
+    border-color: #e2e8f0 !important;
+    background: #f8fafc !important;
+    font-size: 13.5px !important;
 }
 
 /* ── Footer ── */
 .mj-footer {
-    text-align: center; font-size: 0.78rem; color: #94a3b8;
-    margin-top: 2rem; padding-top: 1.25rem;
-    border-top: 1px solid #e2e8f0; line-height: 1.6;
+    text-align: center; font-size: 12px; color: #94a3b8;
+    padding-top: 1.25rem; border-top: 1px solid #e2e8f0;
+    margin-top: 2rem; line-height: 1.7;
 }
+.mj-footer strong { color: #64748b; }
 </style>
 """,
     unsafe_allow_html=True,
 )
 
-# ── Header ────────────────────────────────────────────────────────────────────
+# ── Top bar ────────────────────────────────────────────────────────────────────
 st.markdown(
     """
-<div class="mj-header">
+<div class="mj-topbar">
   <div class="mj-logo">
     <div class="mj-logo-icon">🧠</div>
-    <div class="mj-logo-name">Mind<span>Journal</span></div>
+    <div class="mj-logo-name">Mind<em>Journal</em></div>
   </div>
-  <div class="mj-chip">Not for emergency use</div>
+  <div class="mj-emergency-chip">Not for emergency use</div>
 </div>
 """,
     unsafe_allow_html=True,
 )
 
-# ── Step 1 — journal entry ─────────────────────────────────────────────────────
+# ── Step tabs ──────────────────────────────────────────────────────────────────
+# Derive active tab from session state
+if st.session_state.analysis_done and st.session_state.q_submitted:
+    active = 2
+elif st.session_state.analysis_done:
+    active = 1
+else:
+    active = 0
+
+tab_classes = ["", "", ""]
+tab_classes[active] = " active"
+
+st.markdown(
+    f"""
+<div class="mj-tabs">
+  <div class="mj-tab{tab_classes[0]}">1 · Entry</div>
+  <div class="mj-tab{tab_classes[1]}">2 · Analysis</div>
+  <div class="mj-tab{tab_classes[2]}">3 · Guidance</div>
+</div>
+""",
+    unsafe_allow_html=True,
+)
+
+# ── Step 1 ─────────────────────────────────────────────────────────────────────
 st.markdown(
     """
 <div class="mj-card">
-  <div class="mj-step-label">Step 1 of 3 · Your entry</div>
+  <div class="mj-card-label">Step 1 of 3 · Your entry</div>
   <div class="mj-card-title">What's on your mind today?</div>
-  <div class="mj-card-body">
-    Write freely about your day, your thoughts, or anything that has been weighing on you.
-    Your entry is only processed locally.
-  </div>
+  <div class="mj-card-body">Write freely — your thoughts, your day, anything weighing on you. Processed locally.</div>
 </div>
 """,
     unsafe_allow_html=True,
@@ -347,7 +379,7 @@ st.markdown(
 
 user_text = st.text_area(
     "Journal entry",
-    height=200,
+    height=170,
     placeholder=(
         "e.g. I've been feeling emotionally drained lately. Some days I manage well, "
         "but other times everything feels heavier than usual…"
@@ -359,17 +391,21 @@ user_text = st.text_area(
 word_count = len(user_text.split()) if user_text.strip() else 0
 
 if word_count == 0:
-    wc_color, wc_hint = "#94a3b8", "Try writing at least 2–3 sentences for better feedback."
+    wc_color, wc_dot, wc_hint = "#94a3b8", "#cbd5e1", "Try writing at least 2–3 sentences for better feedback."
 elif word_count < 10:
-    wc_color, wc_hint = "#d97706", "A bit short — a few more words helps the model."
+    wc_color, wc_dot, wc_hint = "#d97706", "#d97706", "A bit short — a few more words helps the model."
 elif word_count <= 150:
-    wc_color, wc_hint = "#16a34a", "Good length."
+    wc_color, wc_dot, wc_hint = "#16a34a", "#16a34a", "Good length."
 else:
-    wc_color, wc_hint = "#d97706", "Long entry — the model reads up to ~512 tokens."
+    wc_color, wc_dot, wc_hint = "#d97706", "#d97706", "Long entry — the model reads up to ~512 tokens."
 
 st.markdown(
-    f'<p class="mj-wc"><span style="color:{wc_color};font-weight:700">{word_count} words</span>'
-    f"&nbsp;·&nbsp; {wc_hint}</p>",
+    f'<div class="mj-wc">'
+    f'<span style="width:7px;height:7px;border-radius:50%;background:{wc_dot};display:inline-block;flex-shrink:0"></span>'
+    f'<span style="color:{wc_color};font-weight:700">{word_count} words</span>'
+    f'<span style="color:#e2e8f0">·</span>'
+    f'<span>{wc_hint}</span>'
+    f'</div>',
     unsafe_allow_html=True,
 )
 
@@ -390,17 +426,14 @@ if analyse:
         with st.spinner("Analysing your entry…"):
             pred_label, prob_dict = predict_entry(user_text, tokenizer, model)
             decision = decide_next_step(pred_label, prob_dict)
-
         st.session_state.update(
             analysis_done=True,
             pred_label=pred_label,
             prob_dict=prob_dict,
             decision=decision,
             q_submitted=False,
-            phq_total=None,
-            phq_severity=None,
-            gad_total=None,
-            gad_severity=None,
+            phq_total=None, phq_severity=None,
+            gad_total=None, gad_severity=None,
             final_decision=None,
         )
 
@@ -410,66 +443,62 @@ if st.session_state.analysis_done:
     prob_dict  = st.session_state.prob_dict
     decision   = st.session_state.decision
 
-    label_text, label_color, label_bg, label_icon = get_badge(pred_label)
+    _, label_color, label_bg, label_text_color, label_icon = get_badge(pred_label)
+    label_name = BADGE_MAP.get(pred_label, (pred_label,))[0]
     msg_type, msg_text = get_support_message(decision)
     risk_tier = decision.get("risk_tier", "low").capitalize()
 
-    LABEL_ORDER = [
-        ("NEU",   "Neutral",                  "#16a34a"),
-        ("HUMOR", "Humor / Positive",         "#2563eb"),
-        ("MH",    "Mental health concern",    "#d97706"),
-        ("SI",    "Suicidal ideation signal", "#dc2626"),
-    ]
-
     # Build confidence bars HTML
-    conf_bars = ""
+    conf_bars_html = ""
     for code, name, bar_color in LABEL_ORDER:
         p = float(prob_dict.get(code, 0.0))
-        conf_bars += (
+        conf_bars_html += (
             f'<div class="mj-conf-row">'
-            f'<div class="mj-conf-label">{name}</div>'
-            f'<div class="mj-conf-bg">'
-            f'<div class="mj-conf-fill" style="width:{p*100:.1f}%;background:{bar_color}"></div>'
-            f'</div>'
-            f'<div class="mj-conf-pct">{p:.0%}</div>'
+            f'  <div class="mj-conf-name">{name}</div>'
+            f'  <div class="mj-conf-track">'
+            f'    <div class="mj-conf-fill" style="width:{p*100:.1f}%;background:{bar_color}"></div>'
+            f'  </div>'
+            f'  <div class="mj-conf-pct">{p:.0%}</div>'
             f'</div>'
         )
 
-    # Step 2 card — fully self-contained HTML block (no split open/close)
+    # Step 2 — fully contained card
     st.markdown(
         f"""
 <div class="mj-card">
-  <div class="mj-step-label">Step 2 of 3 · Analysis result</div>
+  <div class="mj-card-label">Step 2 of 3 · Analysis result</div>
   <div class="mj-card-title">Model interpretation</div>
 
   <div class="mj-badge"
-       style="background:{label_bg};color:{label_color};border:1px solid {label_color}33">
-    {label_icon}&nbsp;&nbsp;{label_text}
+       style="background:{label_bg};color:{label_text_color};border:1px solid {label_color}55">
+    {label_icon}&nbsp; {label_name}
   </div>
 
-  <div class="mj-metric-row">
+  <div class="mj-pills">
     <div class="mj-pill"><span class="mj-pill-key">Risk tier</span>{risk_tier}</div>
     <div class="mj-pill"><span class="mj-pill-key">Top signal</span>{pred_label}</div>
   </div>
 
-  <div class="mj-conf-title">Confidence across classes</div>
-  {conf_bars}
+  <div class="mj-conf-head">Confidence across classes</div>
+  {conf_bars_html}
 </div>
 """,
         unsafe_allow_html=True,
     )
 
-    # Step 3 card — guidance
+    # Step 3 — guidance card
     MSG_ICONS   = {"crisis": "⛑️", "warn": "⚠️", "info": "💬", "soft": "🌿", "ok": "✅"}
-    MSG_CLASSES = {"crisis": "mj-crisis", "warn": "mj-warn", "info": "mj-info",
-                   "soft": "mj-soft", "ok": "mj-ok"}
+    MSG_CLASSES = {
+        "crisis": "mj-crisis", "warn": "mj-warn",
+        "info": "mj-info", "soft": "mj-soft", "ok": "mj-ok",
+    }
     icon = MSG_ICONS.get(msg_type, "•")
     cls  = MSG_CLASSES.get(msg_type, "mj-ok")
 
     st.markdown(
         f"""
 <div class="mj-card">
-  <div class="mj-step-label">Step 3 of 3 · Guidance</div>
+  <div class="mj-card-label">Step 3 of 3 · Guidance</div>
   <div class="mj-card-title">Suggested next step</div>
   <div class="mj-msg {cls}">
     <span class="mj-msg-icon">{icon}</span>
@@ -483,17 +512,20 @@ if st.session_state.analysis_done:
     # ── Optional questionnaires ────────────────────────────────────────────────
     show_prompt = decision.get("showphqgadprompt") or decision.get("show_phq_gad_prompt")
     if show_prompt:
-        with st.expander("📋  Optional: PHQ-9 & GAD-7 Check-in", expanded=False):
+        with st.expander("📋  Optional: PHQ-9 and GAD-7 check-in", expanded=False):
             st.markdown(
-                '<p style="font-size:0.92rem;color:#475569;margin-bottom:1rem">'
+                '<p style="font-size:13.5px;color:#64748b;margin:4px 0 16px;line-height:1.6">'
                 "These brief validated questionnaires give a more structured check-in "
                 "on mood and anxiety.</p>",
                 unsafe_allow_html=True,
             )
 
-            RESP = {0: "Not at all", 1: "Several days",
-                    2: "More than half the days", 3: "Nearly every day"}
-
+            RESP = {
+                0: "Not at all",
+                1: "Several days",
+                2: "More than half the days",
+                3: "Nearly every day",
+            }
             PHQ_QS = [
                 "Little interest or pleasure in doing things",
                 "Feeling down, depressed, or hopeless",
@@ -517,39 +549,36 @@ if st.session_state.analysis_done:
 
             with st.form("questionnaire_form"):
                 st.markdown(
-                    '<div class="mj-q-header">PHQ-9 · Depression screen</div>',
+                    '<div class="mj-q-sec-label">PHQ-9 · Depression screen</div>',
                     unsafe_allow_html=True,
                 )
                 phq_answers = [
                     st.selectbox(
-                        f"{i+1}. {q}",
+                        f"{i + 1}. {q}",
                         options=[0, 1, 2, 3],
                         format_func=lambda x: RESP[x],
                         key=f"phq_{i}",
                     )
                     for i, q in enumerate(PHQ_QS)
                 ]
-
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown(
-                    '<div class="mj-q-header">GAD-7 · Anxiety screen</div>',
+                    '<div class="mj-q-sec-label">GAD-7 · Anxiety screen</div>',
                     unsafe_allow_html=True,
                 )
                 gad_answers = [
                     st.selectbox(
-                        f"{i+1}. {q}",
+                        f"{i + 1}. {q}",
                         options=[0, 1, 2, 3],
                         format_func=lambda x: RESP[x],
                         key=f"gad_{i}",
                     )
                     for i, q in enumerate(GAD_QS)
                 ]
-
                 submitted = st.form_submit_button(
                     "Submit questionnaires", use_container_width=True
                 )
 
-            # Handle submit outside the form block to avoid double-render
             if submitted:
                 phq_total, phq_severity = score_phq9(phq_answers)
                 gad_total, gad_severity = score_gad7(gad_answers)
@@ -567,7 +596,6 @@ if st.session_state.analysis_done:
                     final_decision=final_decision,
                 )
 
-            # Render results (reads from session state, survives re-renders)
             if st.session_state.q_submitted:
                 fd     = st.session_state.final_decision
                 ph_sev = (st.session_state.phq_severity or "").lower()
@@ -579,18 +607,17 @@ if st.session_state.analysis_done:
                     if "mild"     in s: return "mj-q-mild"
                     return "mj-q-min"
 
-                st.markdown('<div class="mj-divider"></div>', unsafe_allow_html=True)
                 st.markdown(
                     f"""
-<p style="font-size:1rem;font-weight:700;color:#0f172a;margin-bottom:0.6rem">
+<p style="font-size:14px;font-weight:700;color:#0f172a;margin:16px 0 4px">
   Questionnaire results
 </p>
-<div class="mj-q-result-row">
+<div class="mj-q-pills">
   <div class="mj-q-pill {sev_class(ph_sev)}">
-    PHQ-9: {st.session_state.phq_total} · {ph_sev.capitalize()}
+    PHQ-9: {st.session_state.phq_total} &nbsp;·&nbsp; {ph_sev.capitalize()}
   </div>
   <div class="mj-q-pill {sev_class(ga_sev)}">
-    GAD-7: {st.session_state.gad_total} · {ga_sev.capitalize()}
+    GAD-7: {st.session_state.gad_total} &nbsp;·&nbsp; {ga_sev.capitalize()}
   </div>
 </div>
 """,
@@ -607,17 +634,20 @@ if st.session_state.analysis_done:
                         "These results suggest professional mental health support would be advisable."
                     )
                 elif fd.get("recommendation") == "consider_professional_help":
-                    st.info("These results suggest that talking to a counsellor or therapist may help.")
+                    st.info(
+                        "These results suggest that talking to a counsellor or therapist may help."
+                    )
                 else:
-                    st.success("Thank you for completing the check-in. Keep taking care of yourself.")
+                    st.success(
+                        "Thank you for completing the check-in. Keep taking care of yourself."
+                    )
 
 # ── Footer ─────────────────────────────────────────────────────────────────────
 st.markdown(
     """
 <div class="mj-footer">
   Research prototype &nbsp;·&nbsp; Not a clinical tool &nbsp;·&nbsp; Not for emergency use<br>
-  If you are in crisis, contact <strong>iCall India: 9152987821</strong>
-  or local emergency services.
+  If you are in crisis, contact <strong>iCall India: 9152987821</strong> or local emergency services.
 </div>
 """,
     unsafe_allow_html=True,
