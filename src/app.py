@@ -235,7 +235,7 @@ div[data-testid="stBaseButton-secondary"] > button {
     box-shadow: 0 1px 2px rgba(15,23,42,0.05) !important;
 }
 div[data-testid="stBaseButton-secondary"] > button:hover {
-    background: #f8fafc !important;
+    background: ##313131cc !important;
     border-color: #cbd5e1 !important;
     color: #0f172a !important;
 }
