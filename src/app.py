@@ -43,8 +43,15 @@ for k, v in DEFAULTS.items():
 
 
 def reset_app():
+    # For widget-bound keys, DELETE instead of setting — Streamlit resets them on next run
+    widget_keys = {"user_text"}
+    
     for k, v in DEFAULTS.items():
-        st.session_state[k] = v
+        if k in widget_keys:
+            if k in st.session_state:
+                del st.session_state[k]   # ← delete widget keys, don't assign to them
+        else:
+            st.session_state[k] = v       # ← normal keys are fine to assign
     st.rerun()
 
 
