@@ -236,8 +236,8 @@ div[data-testid="stBaseButton-secondary"] > button {
 }
 div[data-testid="stBaseButton-secondary"] > button:hover {
     background: #43ff64d9 !important;
-    border-color: #cbd5e1 !important;
-    color: #0f172a !important;
+    # border-color: #cbd5e1 !important;
+    # color: #0f172a !important;
 }
 
 /* ── Result badge ── */
