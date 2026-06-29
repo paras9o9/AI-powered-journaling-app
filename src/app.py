@@ -204,41 +204,41 @@ div[data-testid="stTextArea"] textarea::placeholder {
 }
 
 /* ── Buttons ── */
-div[data-testid="stButton"] > button,
-div[data-testid="stFormSubmitButton"] > button {
-    border-radius: 10px !important;
-    min-height: 42px !important;
-    font-size: 13.5px !important;
-    font-weight: 700 !important;
-    font-family: 'Inter', system-ui, sans-serif !important;
-    letter-spacing: 0.01em !important;
-    transition: all 0.14s ease !important;
-    cursor: pointer !important;
-}
-div[data-testid="stBaseButton-primary"] > button,
-div[data-testid="stFormSubmitButton"] > button {
-    background: #4f46e5 !important;
-    color: #fff !important;
-    border: none !important;
-    box-shadow: 0 1px 2px rgba(79,70,229,0.25) !important;
-}
-div[data-testid="stBaseButton-primary"] > button:hover,
-div[data-testid="stFormSubmitButton"] > button:hover {
-    background: #4338ca !important;
-    box-shadow: 0 4px 12px rgba(79,70,229,0.3) !important;
-    transform: translateY(-1px) !important;
-}
-div[data-testid="stBaseButton-secondary"] > button {
-    background: #fff !important;
-    color: #475569 !important;
-    border: 1.5px solid #e2e8f0 !important;
-    box-shadow: 0 1px 2px rgba(15,23,42,0.05) !important;
-}
-div[data-testid="stBaseButton-secondary"] > button:hover {
-    background: #43ff64d9 !important;
-    # border-color: #cbd5e1 !important;
-    # color: #0f172a !important;
-}
+# div[data-testid="stButton"] > button,
+# div[data-testid="stFormSubmitButton"] > button {
+#     border-radius: 10px !important;
+#     min-height: 42px !important;
+#     font-size: 13.5px !important;
+#     font-weight: 700 !important;
+#     font-family: 'Inter', system-ui, sans-serif !important;
+#     letter-spacing: 0.01em !important;
+#     transition: all 0.14s ease !important;
+#     cursor: pointer !important;
+# }
+# div[data-testid="stBaseButton-primary"] > button,
+# div[data-testid="stFormSubmitButton"] > button {
+#     background: #4f46e5 !important;
+#     color: #fff !important;
+#     border: none !important;
+#     box-shadow: 0 1px 2px rgba(79,70,229,0.25) !important;
+# }
+# div[data-testid="stBaseButton-primary"] > button:hover,
+# div[data-testid="stFormSubmitButton"] > button:hover {
+#     background: #4338ca !important;
+#     box-shadow: 0 4px 12px rgba(79,70,229,0.3) !important;
+#     transform: translateY(-1px) !important;
+# }
+# div[data-testid="stBaseButton-secondary"] > button {
+#     background: #fff !important;
+#     color: #475569 !important;
+#     border: 1.5px solid #e2e8f0 !important;
+#     box-shadow: 0 1px 2px rgba(15,23,42,0.05) !important;
+# }
+# div[data-testid="stBaseButton-secondary"] > button:hover {
+#     background: #43ff64d9 !important;
+#     border-color: #cbd5e1 !important;
+#     color: #0f172a !important;
+# }
 
 /* ── Result badge ── */
 .mj-badge {
