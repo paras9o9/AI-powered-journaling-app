@@ -311,8 +311,8 @@ div[data-testid="stExpander"] summary {
     font-size: 14px !important; padding: 14px 16px !important;
     transition: background 0.12s !important;
 }
-div[data-testid="stExpander"] summary:hover { background: #fafafa !important; }
-div[data-testid="stExpander"] details > div { padding: 0 16px 16px !important; }
+# div[data-testid="stExpander"] summary:hover { background: #fafafa !important; }
+# div[data-testid="stExpander"] details > div { padding: 0 16px 16px !important; }
 
 /* ── Selectbox ── */
 div[data-testid="stSelectbox"] > div > div {
@@ -538,7 +538,7 @@ if st.session_state.analysis_done:
                 "Poor appetite or overeating",
                 "Feeling bad about yourself, or feeling like a failure",
                 "Trouble concentrating on things",
-                "Moving or speaking unusually slowly — or being unusually fidgety",
+                "Moving or speaking unusually slowly or being unusually fidgety",
                 "Thoughts that you would be better off dead, or of hurting yourself",
             ]
             GAD_QS = [
