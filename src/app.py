@@ -274,24 +274,24 @@ div[data-testid="stTextArea"] textarea::placeholder {
 # .mj-conf-pct { font-size: 12px; font-weight: 700; color: #64748b; width: 34px; text-align: right; }
 
 /* ── Message boxes ── */
-# .mj-msg {
-#     border-radius: 11px; padding: 13px 15px;
-#     font-size: 13.5px; line-height: 1.6; font-weight: 500;
-#     display: flex; gap: 11px; align-items: flex-start; margin-top: 2px;
-# }
-# .mj-msg-icon { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
-# .mj-crisis { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
-# .mj-warn   { background: #fffbeb; color: #92400e; border: 1px solid #fcd34d; }
-# .mj-info   { background: #eff6ff; color: #1d4ed8; border: 1px solid #93c5fd; }
-# .mj-soft   { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-# .mj-ok     { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+.mj-msg {
+    border-radius: 11px; padding: 13px 15px;
+    font-size: 13.5px; line-height: 1.6; font-weight: 500;
+    display: flex; gap: 11px; align-items: flex-start; margin-top: 2px;
+}
+.mj-msg-icon { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+.mj-crisis { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
+.mj-warn   { background: #fffbeb; color: #92400e; border: 1px solid #fcd34d; }
+.mj-info   { background: #eff6ff; color: #1d4ed8; border: 1px solid #93c5fd; }
+.mj-soft   { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+.mj-ok     { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
 
 /* ── Questionnaire results ── */
-# .mj-q-sec-label {
-#     font-size: 11px; font-weight: 700; text-transform: uppercase;
-#     letter-spacing: 0.08em; color: #6366f1;
-#     padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; margin-bottom: 12px;
-# }
+.mj-q-sec-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: #6366f1;
+    padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; margin-bottom: 12px;
+}
 # .mj-q-pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 6px; }
 # .mj-q-pill { border-radius: 9px; padding: 7px 13px; font-size: 13px; font-weight: 700; }
 # .mj-q-min  { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
