@@ -97,46 +97,46 @@ def get_support_message(decision):
 
 
 # ── Styles ────────────────────────────────────────────────────────────────────
-# st.html("""
-# <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-# <style>
-# html, body, [class*="css"], .stApp {
-#     font-family: 'Inter', system-ui, sans-serif !important;
-#     -webkit-font-smoothing: antialiased;
-# }
-# .stApp { background: #f8fafc; min-height: 100vh; }
-# .block-container {
-#     max-width: 700px !important;
-#     padding: 1.75rem 1.5rem 4rem !important;
-#     margin: 0 auto !important;
-# }
-# #MainMenu, footer, header { visibility: hidden; }
-# div[data-testid="stToolbar"] { display: none; }
+st.html("""
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+html, body, [class*="css"], .stApp {
+    font-family: 'Inter', system-ui, sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+}
+.stApp { background: #f8fafc; min-height: 100vh; }
+.block-container {
+    max-width: 700px !important;
+    padding: 1.75rem 1.5rem 4rem !important;
+    margin: 0 auto !important;
+}
+#MainMenu, footer, header { visibility: hidden; }
+div[data-testid="stToolbar"] { display: none; }
 
-# /* ── Top bar ── */
-# .mj-topbar {
-#     display: flex; align-items: center;
-#     justify-content: space-between;
-#     padding-bottom: 1.25rem;
-#     border-bottom: 1px solid #e2e8f0;
-#     margin-bottom: 1.5rem;
-# }
-# .mj-logo { display: flex; align-items: center; gap: 10px; }
-# .mj-logo-icon {
-#     width: 34px; height: 34px; background: #4f46e5;
-#     border-radius: 9px; display: flex; align-items: center;
-#     justify-content: center; font-size: 15px;
-# }
-# .mj-logo-name { font-size: 15px; font-weight: 700; color: #0f172a; letter-spacing: -0.01em; }
-# .mj-logo-name em { color: #4f46e5; font-style: normal; }
-# .mj-emergency-chip {
-#     font-size: 11px; font-weight: 600;
-#     padding: 4px 10px; border-radius: 999px;
-#     background: #fff7ed; color: #9a3412;
-#     border: 1px solid #fed7aa; letter-spacing: 0.01em;
-# }
+/* ── Top bar ── */
+.mj-topbar {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 1.5rem;
+}
+.mj-logo { display: flex; align-items: center; gap: 10px; }
+.mj-logo-icon {
+    width: 34px; height: 34px; background: #4f46e5;
+    border-radius: 9px; display: flex; align-items: center;
+    justify-content: center; font-size: 15px;
+}
+.mj-logo-name { font-size: 15px; font-weight: 700; color: #0f172a; letter-spacing: -0.01em; }
+.mj-logo-name em { color: #4f46e5; font-style: normal; }
+.mj-emergency-chip {
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 999px;
+    background: #fff7ed; color: #9a3412;
+    border: 1px solid #fed7aa; letter-spacing: 0.01em;
+}
 
-# /* ── Step tabs ── */
+/* ── Step tabs ── */
 # .mj-tabs {
 #     display: flex; gap: 4px; background: #f1f5f9;
 #     border-radius: 11px; padding: 3px; margin-bottom: 1.5rem;
@@ -151,7 +151,7 @@ def get_support_message(decision):
 #     box-shadow: 0 1px 3px rgba(15,23,42,0.08), 0 0 0 0.5px #e2e8f0;
 # }
 
-# /* ── Cards ── */
+/* ── Cards ── */
 # .mj-card {
 #     background: #fff;
 #     border: 1px solid #e8edf3;
@@ -172,13 +172,13 @@ def get_support_message(decision):
 #     font-size: 14px; color: #64748b; line-height: 1.6; margin: 0;
 # }
 
-# /* ── Word count ── */
+/* ── Word count ── */
 # .mj-wc {
 #     display: flex; align-items: center; gap: 7px;
 #     font-size: 12px; color: #94a3b8; margin: 8px 0 14px; font-weight: 500;
 # }
 
-# /* ── Textarea ── */
+/* ── Textarea ── */
 # div[data-testid="stTextArea"] { margin-top: 10px; }
 # div[data-testid="stTextArea"] textarea {
 #     border-radius: 11px !important;
@@ -203,7 +203,7 @@ def get_support_message(decision):
 #     color: #94a3b8 !important; font-style: italic !important;
 # }
 
-# /* ── Buttons ── */
+/* ── Buttons ── */
 # div[data-testid="stButton"] > button,
 # div[data-testid="stFormSubmitButton"] > button {
 #     border-radius: 10px !important;
@@ -240,14 +240,14 @@ def get_support_message(decision):
 #     color: #0f172a !important;
 # }
 
-# /* ── Result badge ── */
+/* ── Result badge ── */
 # .mj-badge {
 #     display: inline-flex; align-items: center; gap: 8px;
 #     padding: 6px 15px; border-radius: 999px;
 #     font-size: 13px; font-weight: 700; margin-bottom: 14px;
 # }
 
-# /* ── Metric pills ── */
+/* ── Metric pills ── */
 # .mj-pills { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
 # .mj-pill {
 #     background: #f8fafc; border: 1px solid #e2e8f0;
@@ -256,7 +256,7 @@ def get_support_message(decision):
 # }
 # .mj-pill-key { color: #94a3b8; font-weight: 500; margin-right: 4px; }
 
-# /* ── Confidence bars ── */
+/* ── Confidence bars ── */
 # .mj-conf-head {
 #     font-size: 11px; font-weight: 700; text-transform: uppercase;
 #     letter-spacing: 0.08em; color: #94a3b8; margin-bottom: 11px;
@@ -273,7 +273,7 @@ def get_support_message(decision):
 # .mj-conf-fill { height: 100%; border-radius: 99px; }
 # .mj-conf-pct { font-size: 12px; font-weight: 700; color: #64748b; width: 34px; text-align: right; }
 
-# /* ── Message boxes ── */
+/* ── Message boxes ── */
 # .mj-msg {
 #     border-radius: 11px; padding: 13px 15px;
 #     font-size: 13.5px; line-height: 1.6; font-weight: 500;
@@ -286,7 +286,7 @@ def get_support_message(decision):
 # .mj-soft   { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
 # .mj-ok     { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
 
-# /* ── Questionnaire results ── */
+/* ── Questionnaire results ── */
 # .mj-q-sec-label {
 #     font-size: 11px; font-weight: 700; text-transform: uppercase;
 #     letter-spacing: 0.08em; color: #6366f1;
@@ -299,7 +299,7 @@ def get_support_message(decision):
 # .mj-q-mod  { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
 # .mj-q-sev  { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
 
-# /* ── Expander ── */
+/* ── Expander ── */
 # div[data-testid="stExpander"] details {
 #     background: #fff !important;
 #     border: 1px solid #e2e8f0 !important;
@@ -314,7 +314,7 @@ def get_support_message(decision):
 # div[data-testid="stExpander"] summary:hover { background: #fafafa !important;}
 # div[data-testid="stExpander"] details > div { padding: 0 16px 16px !important; }
 
-# /* ── Selectbox ── */
+/* ── Selectbox ── */
 # div[data-testid="stSelectbox"] > div > div {
 #     border-radius: 9px !important;
 #     border-color: #e2e8f0 !important;
@@ -332,19 +332,19 @@ def get_support_message(decision):
 # </style>
 # """)
 
-# # ── Top bar ────────────────────────────────────────────────────────────────────
-# st.markdown(
-#     """
-# <div class="mj-topbar">
-#   <div class="mj-logo">
-#     <div class="mj-logo-icon">🧠</div>
-#     <div class="mj-logo-name">Mind<em>Journal</em></div>
-#   </div>
-#   <div class="mj-emergency-chip">Not for emergency use</div>
-# </div>
-# """,
-#     unsafe_allow_html=True,
-# )
+# ── Top bar ────────────────────────────────────────────────────────────────────
+st.markdown(
+    """
+<div class="mj-topbar">
+  <div class="mj-logo">
+    <div class="mj-logo-icon">🧠</div>
+    <div class="mj-logo-name">Mind<em>Journal</em></div>
+  </div>
+  <div class="mj-emergency-chip">Not for emergency use</div>
+</div>
+""",
+    unsafe_allow_html=True,
+)
 
 # ── Step tabs ──────────────────────────────────────────────────────────────────
 if st.session_state.analysis_done and st.session_state.q_submitted:
