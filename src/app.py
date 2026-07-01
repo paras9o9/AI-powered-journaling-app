@@ -318,9 +318,12 @@ div[data-testid="stTextArea"] textarea::placeholder {
 div[data-testid="stSelectbox"] > div > div {
     border-radius: 9px !important;
     border-color: #e2e8f0 !important;
-    color: red;
+    # color: red;
     background: #f8fafc !important;
     font-size: 13.5px !important;
+}
+div[data-testid="stSelectbox"] > div {
+color: red;
 }
 
 # /* ── Footer ── */
@@ -416,9 +419,9 @@ st.markdown(
 col_analyse, col_reset = st.columns([5, 1])
 with col_analyse:
     analyse = st.button("Analyse my entry", type="primary", use_container_width=True)
-# with col_reset:
-#     if st.button("Reset", use_container_width=True):
-#         reset_app()
+with col_reset:
+    if st.button("Reset", use_container_width=True):
+        reset_app()
 
 # ── Run analysis ───────────────────────────────────────────────────────────────
 if analyse:
