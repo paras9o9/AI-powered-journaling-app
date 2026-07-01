@@ -137,71 +137,71 @@ div[data-testid="stToolbar"] { display: none; }
 }
 
 /* ── Step tabs ── */
-# .mj-tabs {
-#     display: flex; gap: 4px; background: #f1f5f9;
-#     border-radius: 11px; padding: 3px; margin-bottom: 1.5rem;
-# }
-# .mj-tab {
-#     flex: 1; text-align: center; padding: 7px 4px;
-#     border-radius: 8px; font-size: 12px; font-weight: 600;
-#     color: #64748b;
-# }
-# .mj-tab.active {
-#     background: #fff; color: #4f46e5;
-#     box-shadow: 0 1px 3px rgba(15,23,42,0.08), 0 0 0 0.5px #e2e8f0;
-# }
+.mj-tabs {
+    display: flex; gap: 4px; background: #f1f5f9;
+    border-radius: 11px; padding: 3px; margin-bottom: 1.5rem;
+}
+.mj-tab {
+    flex: 1; text-align: center; padding: 7px 4px;
+    border-radius: 8px; font-size: 12px; font-weight: 600;
+    color: #64748b;
+}
+.mj-tab.active {
+    background: #fff; color: #4f46e5;
+    box-shadow: 0 1px 3px rgba(15,23,42,0.08), 0 0 0 0.5px #e2e8f0;
+}
 
 /* ── Cards ── */
-# .mj-card {
-#     background: #fff;
-#     border: 1px solid #e8edf3;
-#     border-radius: 16px;
-#     padding: 1.4rem 1.5rem;
-#     margin-bottom: 1rem;
-# }
-# .mj-card-label {
-#     font-size: 11px; font-weight: 700;
-#     text-transform: uppercase; letter-spacing: 0.09em;
-#     color: #6366f1; margin-bottom: 6px;
-# }
-# .mj-card-title {
-#     font-size: 17px; font-weight: 700;
-#     color: #0f172a; margin-bottom: 5px; letter-spacing: -0.01em;
-# }
-# .mj-card-body {
-#     font-size: 14px; color: #64748b; line-height: 1.6; margin: 0;
-# }
+.mj-card {
+    background: #fff;
+    border: 1px solid #e8edf3;
+    border-radius: 16px;
+    padding: 1.4rem 1.5rem;
+    margin-bottom: 1rem;
+}
+.mj-card-label {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.09em;
+    color: #6366f1; margin-bottom: 6px;
+}
+.mj-card-title {
+    font-size: 17px; font-weight: 700;
+    color: #0f172a; margin-bottom: 5px; letter-spacing: -0.01em;
+}
+.mj-card-body {
+    font-size: 14px; color: #64748b; line-height: 1.6; margin: 0;
+}
 
 /* ── Word count ── */
-# .mj-wc {
-#     display: flex; align-items: center; gap: 7px;
-#     font-size: 12px; color: #94a3b8; margin: 8px 0 14px; font-weight: 500;
-# }
+.mj-wc {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 12px; color: #94a3b8; margin: 8px 0 14px; font-weight: 500;
+}
 
 /* ── Textarea ── */
-# div[data-testid="stTextArea"] { margin-top: 10px; }
-# div[data-testid="stTextArea"] textarea {
-#     border-radius: 11px !important;
-#     border: 1.5px solid #cbd5e1 !important;
-#     background: #f8fafc !important;
-#     color: #0f172a !important;
-#     caret-color: #4f46e5 !important;
-#     padding: 13px 14px !important;
-#     font-size: 14px !important;
-#     line-height: 1.65 !important;
-#     font-family: 'Inter', system-ui, sans-serif !important;
-#     resize: vertical !important;
-#     transition: border-color 0.15s, box-shadow 0.15s !important;
-# }
-# div[data-testid="stTextArea"] textarea:focus {
-#     border-color: #6366f1 !important;
-#     background: #fff !important;
-#     box-shadow: 0 0 0 3px rgba(99,102,241,0.1) !important;
-#     outline: none !important;
-# }
-# div[data-testid="stTextArea"] textarea::placeholder {
-#     color: #94a3b8 !important; font-style: italic !important;
-# }
+div[data-testid="stTextArea"] { margin-top: 10px; }
+div[data-testid="stTextArea"] textarea {
+    border-radius: 11px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    caret-color: #4f46e5 !important;
+    padding: 13px 14px !important;
+    font-size: 14px !important;
+    line-height: 1.65 !important;
+    font-family: 'Inter', system-ui, sans-serif !important;
+    resize: vertical !important;
+    transition: border-color 0.15s, box-shadow 0.15s !important;
+}
+div[data-testid="stTextArea"] textarea:focus {
+    border-color: #6366f1 !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.1) !important;
+    outline: none !important;
+}
+div[data-testid="stTextArea"] textarea::placeholder {
+    color: #94a3b8 !important; font-style: italic !important;
+}
 
 /* ── Buttons ── */
 # div[data-testid="stButton"] > button,
@@ -300,19 +300,19 @@ div[data-testid="stToolbar"] { display: none; }
 # .mj-q-sev  { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
 
 /* ── Expander ── */
-# div[data-testid="stExpander"] details {
-#     background: #fff !important;
-#     border: 1px solid #e2e8f0 !important;
-#     border-radius: 14px !important;
-#     overflow: hidden !important;
-# }
-# div[data-testid="stExpander"] summary {
-#     font-weight: 700 !important; color: #1e293b !important;
-#     font-size: 14px !important; padding: 14px 16px !important;
-#     transition: background 0.12s !important;
-# }
-# div[data-testid="stExpander"] summary:hover { background: #fafafa !important;}
-# div[data-testid="stExpander"] details > div { padding: 0 16px 16px !important; }
+div[data-testid="stExpander"] details {
+    background: #fff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+}
+div[data-testid="stExpander"] summary {
+    font-weight: 700 !important; color: #1e293b !important;
+    font-size: 14px !important; padding: 14px 16px !important;
+    transition: background 0.12s !important;
+}
+div[data-testid="stExpander"] summary:hover { background: #fafafa !important; color: black;}
+div[data-testid="stExpander"] details > div { padding: 0 16px 16px !important; }
 
 /* ── Selectbox ── */
 # div[data-testid="stSelectbox"] > div > div {
