@@ -318,12 +318,11 @@ div[data-testid="stTextArea"] textarea::placeholder {
 div[data-testid="stSelectbox"] > div > div {
     border-radius: 9px !important;
     border-color: #e2e8f0 !important;
-    # color: red;
     background: #f8fafc !important;
     font-size: 13.5px !important;
 }
 div[data-testid="stSelectbox"] > div {
-color: red;
+color: black;
 }
 
 # /* ── Footer ── */
