@@ -374,7 +374,7 @@ st.markdown(
 <div class="mj-card">
   <div class="mj-card-label">Step 1 of 3 · Your entry</div>
   <div class="mj-card-title">What's on your mind today?</div>
-  <div class="mj-card-body">Write freely — your thoughts, your day, anything weighing on you. Processed locally.</div>
+  <div class="mj-card-body">Write freely, your thoughts, your day, anything weighing on you. Processed locally.</div>
 </div>
 """,
     unsafe_allow_html=True,
