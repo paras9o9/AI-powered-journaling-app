@@ -315,12 +315,13 @@ div[data-testid="stTextArea"] textarea::placeholder {
 # div[data-testid="stExpander"] details > div { padding: 0 16px 16px !important; }
 
 /* ── Selectbox ── */
-# div[data-testid="stSelectbox"] > div > div {
-#     border-radius: 9px !important;
-#     border-color: #e2e8f0 !important;
-#     background: #f8fafc !important;
-#     font-size: 13.5px !important;
-# }
+div[data-testid="stSelectbox"] > div > div {
+    border-radius: 9px !important;
+    border-color: #e2e8f0 !important;
+    color: red;
+    background: #f8fafc !important;
+    font-size: 13.5px !important;
+}
 
 # /* ── Footer ── */
 # .mj-footer {
