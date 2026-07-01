@@ -306,13 +306,13 @@ div[data-testid="stTextArea"] textarea::placeholder {
 #     border-radius: 14px !important;
 #     overflow: hidden !important;
 # }
-# div[data-testid="stExpander"] summary {
-#     font-weight: 700 !important; color: #1e293b !important;
-#     font-size: 14px !important; padding: 14px 16px !important;
-#     transition: background 0.12s !important;
-# }
+div[data-testid="stExpander"] summary {
+    font-weight: 700 !important; color: #1e293b !important;
+    font-size: 14px !important; padding: 14px 16px !important;
+    transition: background 0.12s !important;
+}
 # div[data-testid="stExpander"] summary:hover { background: #fafafa !important; }
-# div[data-testid="stExpander"] details > div { padding: 0 16px 16px !important; }
+div[data-testid="stExpander"] details > div { padding: 0 16px 16px !important; }
 
 /* ── Selectbox ── */
 div[data-testid="stSelectbox"] > div > div {
